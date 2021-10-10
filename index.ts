@@ -6,7 +6,7 @@ export const diDep = <T>(dep: T | string): T => {
   const store = ls.getStore();
 
   if (!store) {
-    throw new Error('Dependency container not registered! Consider that you call "diInit" before');
+    throw new Error('DI container not registered! Consider that you call "diInit" before');
   }
 
   const userDep = (store.deps as Map<T | string, T>).get(dep);
@@ -22,7 +22,7 @@ export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
   const store = ls.getStore();
 
   if (!store) {
-    throw new Error('Dependency container not registered! Consider that you call "diInit" before');
+    throw new Error('DI container not registered! Consider that you call "diInit" before');
   }
 
   store.deps.set(dep, value);
