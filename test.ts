@@ -1,7 +1,7 @@
 import { test } from "uvu";
 import { equal, throws } from "uvu/assert";
 
-import { diInit, diDep, diSet } from "./index.js";
+import { diInit, diDep, diSet, diOnce } from "./index.js";
 
 test("diDep error before init", () => {
   const depFn = () => 1;
@@ -64,6 +64,26 @@ test("diDep with string dep type generic support", () => {
     diSet('test', true);
 
     equal(fn(), true);
+  });
+});
+
+test('diOnce error before init', () => {
+  const fn = diOnce(() => 1);
+
+  throws(() => fn());
+});
+
+test('diOnce', () => {
+  let i = 0;
+  const fn = diOnce((n: number) => {
+    i += n;
+    return i;
+  });
+
+  diInit(() => {
+    equal(fn(1), 1);
+    equal(fn(1), 1);
+    equal(i, 1);
   });
 });
 
