@@ -18,7 +18,7 @@ export const diDep = <T>(dep: T | string): T => {
   return userDep ?? (dep as T);
 };
 
-export const diSet = (dep: unknown, value: unknown) => {
+export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
   const store = ls.getStore();
 
   if (!store) {
