@@ -9,7 +9,7 @@ Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStor
 diInit(() => { // <- Init DI scope. For example, use this in your Express middleware on each request
   const depFn = () => 1;
 
-  const fn = (dep = diDep(depFn)) => dep();
+  const fn = () => diDep(depFn)();
 
   fn() // 1
 });
@@ -21,7 +21,7 @@ diInit(() => { // <- Init DI scope. For example, use this in your Express middle
 diInit(() => { // <- Init DI scope. For example, use this in your Express middleware on each request
   const depFn = () => 1;
 
-  const fn = (dep = diDep(depFn)) => dep();
+  const fn = () => diDep(depFn)();
 
   diSet(depFn, () => 2); // <- Override depFn. For example, use this in your unit tests
 
@@ -33,7 +33,7 @@ diInit(() => { // <- Init DI scope. For example, use this in your Express middle
 
 ```typescript
 diInit(() => {
-  const fn = (dep = diDep<boolean>('test')) => dep;
+  const fn = () => diDep<boolean>('test');
 
   diSet('test', true);
 
