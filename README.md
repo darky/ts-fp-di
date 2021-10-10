@@ -40,3 +40,19 @@ diInit(() => {
   fn() // true
 });
 ```
+
+#### Singleton for DI scope
+
+```typescript
+let i = 0;
+const fn = diOnce(() => { // <- setup Singleton function for DI scope
+  i += 1;
+  return i;
+});
+
+diInit(() => {
+  fn(); // 1
+  fn(); // also 1, because fn is singleton for DI scope
+  i // 1, because fn is signleton for DI scope
+});
+```
