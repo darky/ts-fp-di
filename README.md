@@ -53,6 +53,6 @@ const fn = diOnce(() => { // <- setup Singleton function for DI scope
 diInit(() => {
   fn(); // 1
   fn(); // also 1, because fn is singleton for DI scope
-  i // 1, because fn is signleton for DI scope
+  i // 1, because fn is singleton for DI scope
 });
 ```
