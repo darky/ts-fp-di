@@ -5,7 +5,7 @@ const ls = new AsyncLocalStorage<{ deps: Map<unknown, unknown>, once: Map<unknow
 export const diDep = <T>(dep: T | string): T => {
   const store = ls.getStore();
 
-  if (!store) {
+  if (store == null) {
     throw new Error('DI container not registered! Consider that you call "diInit" before');
   }
 
@@ -21,7 +21,7 @@ export const diDep = <T>(dep: T | string): T => {
 export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
   const store = ls.getStore();
 
-  if (!store) {
+  if (store == null) {
     throw new Error('DI container not registered! Consider that you call "diInit" before');
   }
 
@@ -36,7 +36,7 @@ export const diOnce = <T extends Function>(fn: T): T => {
   return (function(this: unknown, ...args: unknown[]) {
     const store = ls.getStore();
 
-    if (!store) {
+    if (store == null) {
       throw new Error('DI container not registered! Consider that you call "diInit" before');
     }
 
