@@ -56,3 +56,13 @@ diInit(() => {
   i // 1, because fn is singleton for DI scope
 });
 ```
+
+#### Check that runtime in DI scope
+
+```typescript
+diExists() // false
+
+diInit(() => {
+  diExists() // true
+});
+```
