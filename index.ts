@@ -43,3 +43,5 @@ export const diOnce = <T extends Function>(fn: T): T => {
     return store.once.get(fn) ?? store.once.set(fn, fn.apply(this, args)).get(fn);
   }) as unknown as T
 }
+
+export const diExists = () => (ls.getStore() == null) === false

@@ -1,7 +1,7 @@
 import { test } from "uvu";
 import { equal, throws } from "uvu/assert";
 
-import { diInit, diDep, diSet, diOnce } from "./index.js";
+import { diInit, diDep, diSet, diOnce, diExists } from "./index.js";
 
 test("diDep error before init", () => {
   const depFn = () => 1;
@@ -84,6 +84,16 @@ test('diOnce', () => {
     equal(fn(1), 1);
     equal(fn(1), 1);
     equal(i, 1);
+  });
+});
+
+test('diExists - false', () => {
+  equal(diExists(), false);
+});
+
+test('diExists - true', () => {
+  diInit(() => {
+    equal(diExists(), true);
   });
 });
 
