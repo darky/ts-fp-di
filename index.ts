@@ -28,8 +28,8 @@ export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
   store.deps.set(dep, value);
 };
 
-export const diInit = (cb: () => void) => {
-  ls.run({ deps: new Map(), once: new Map() }, cb);
+export const diInit = <T>(cb: () => T) => {
+  return ls.run({ deps: new Map(), once: new Map() }, cb);
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {
