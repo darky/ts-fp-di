@@ -1,44 +1,40 @@
 # ts-fp-di
-Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage
+Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage.
+
+## Get started
+Firstly, need init DI container for each life cycle of your backend application (each HTTP request/response, handle MQ message, ...)
+Example of middleware for typical Koa application, where on each HTTP request will be created particular DI container:
+
+```typescript
+app.use(async (ctx, next) => {
+  await diInit(async () => return await next());
+});
+```
+
+Further, simply use **ts-fp-di** API "as is" in code, it will consider particular DI scope.
 
 ## Examples
 
 #### Basic
 
 ```typescript
-diInit(() => { // <- Init DI scope. For example, use this in your framework middleware on each request
-  const depFn = () => 1;
-
-  const fn = () => diDep(depFn)();
-
-  fn() // 1
-});
+const fn = () => 1;
+diDep(fn)() // call `fn` function inside DI scope, it's return 1
 ```
 
-#### Override dep
+#### Override dependency
 
 ```typescript
-diInit(() => { // <- Init DI scope. For example, use this in your framework middleware on each request
-  const depFn = () => 1;
-
-  const fn = () => diDep(depFn)();
-
-  diSet(depFn, () => 2); // <- Override depFn. For example, use this in your unit tests
-
-  fn(); // 2
-});
+const fn = () => 1;
+diSet(fn, () => 2); // Override `fn` function inside DI scope. Useful for unit tests.
+diDep(fn)() // returns 2, because it rewriten.
 ```
 
-#### Dep by string key
+#### Dependency by string key
 
 ```typescript
-diInit(() => {
-  const fn = () => diDep<boolean>('test');
-
-  diSet('test', true);
-
-  fn() // true
-});
+diSet('test', true);
+diDep('test') // true
 ```
 
 #### Singleton for DI scope
@@ -50,11 +46,9 @@ const fn = diOnce(() => { // <- setup Singleton function for DI scope
   return i;
 });
 
-diInit(() => {
-  fn(); // 1
-  fn(); // also 1, because fn is singleton for DI scope
-  i // 1, because fn is singleton for DI scope
-});
+fn(); // 1
+fn(); // also 1, because fn is singleton for DI scope
+i // 1, because fn is singleton for DI scope
 ```
 
 #### Override Singleton for DI scope
@@ -64,10 +58,8 @@ const fn = diOnce((n: number) => { // <- setup Singleton function for DI scope
   return n + 1;
 });
 
-diInit(() => {
-  diOnceSet(fn, -1); // Override diOnceSet. For example, use this in your unit tests
-  fn(4) // -1 instead 5, because -1 set on prev line
-});
+diOnceSet(fn, -1); // Override diOnceSet. For example, use this in your unit tests
+fn(4) // -1 instead 5, because -1 set on prev line
 ```
 
 #### Check that runtime in DI scope
