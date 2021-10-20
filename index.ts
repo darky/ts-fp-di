@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "async_hooks";
 
-const ls = new AsyncLocalStorage<{ deps: Map<unknown, unknown>, once: Map<unknown, unknown> }>();
+const ls = new AsyncLocalStorage<{ deps: Map<unknown, unknown>; once: Map<unknown, unknown> }>();
 
 export const diDep = <T>(dep: T | string): T => {
   const store = storeOrError();
@@ -23,11 +23,17 @@ export const diInit = <T>(cb: () => T) => {
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {
-  return (function(this: unknown, ...args: unknown[]) {
+  const onceFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError();
-    return store.once.get(fn) ?? store.once.set(fn, fn.apply(this, args)).get(fn);
-  }) as unknown as T
-}
+    return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn);
+  } as unknown as T;
+  return onceFn;
+};
+
+export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
+  const store = storeOrError();
+  store.once.set(fn, value);
+};
 
 const storeOrError = () => {
   const store = ls.getStore();
@@ -37,6 +43,6 @@ const storeOrError = () => {
   }
 
   return store;
-}
+};
 
-export const diExists = () => (ls.getStore() == null) === false
+export const diExists = () => (ls.getStore() == null) === false;
