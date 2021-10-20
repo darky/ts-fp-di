@@ -57,6 +57,19 @@ diInit(() => {
 });
 ```
 
+#### Override Singleton for DI scope
+
+```typescript
+const fn = diOnce((n: number) => { // <- setup Singleton function for DI scope
+  return n + 1;
+});
+
+diInit(() => {
+  diOnceSet(fn, -1); // Override diOnceSet. For example, use this in your unit tests
+  fn(4) // -1 instead 5, because -1 set on prev line
+});
+```
+
 #### Check that runtime in DI scope
 
 ```typescript
