@@ -3,6 +3,7 @@ Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStor
 
 ## Get started
 Firstly, need init DI container for each life cycle of your backend application (each HTTP request/response, handle MQ message, ...).
+
 Example of middleware for typical Koa application, where on each HTTP request will be created particular DI container:
 
 ```typescript
@@ -73,6 +74,6 @@ diInit(() => {
 
 ## Limitations
 
-**ts-fp-di** based on Node.js AsyncLocalStorage and extend limitations from it
+**ts-fp-di** based on Node.js AsyncLocalStorage and inherits limitations from it
 
 https://nodejs.org/dist/latest-v17.x/docs/api/async_context.html#troubleshooting-context-loss
