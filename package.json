@@ -4,6 +4,10 @@
   "description": "Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:darky/ts-fp-di.git"
+  },
   "keywords": [
     "fp",
     "functional",
