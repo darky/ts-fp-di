@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "async_hooks";
 
-export const _als = new AsyncLocalStorage<{ deps: Map<unknown, unknown>; once: Map<unknown, unknown> }>();
+export const _als = new AsyncLocalStorage<{ deps: Map<unknown, unknown>; once: Map<unknown, unknown>, [k: string]: unknown }>();
 
 export const diDep = <T>(dep: T | string): T => {
   const store = storeOrError();
