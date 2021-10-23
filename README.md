@@ -71,6 +71,10 @@ diInit(() => {
   diExists() // true
 });
 ```
+## Ecosystem
+
+* [ts-fp-di-effector](https://github.com/darky/ts-fp-di-effector) - [Effector](https://effector.dev/) bindings for [ts-fp-di](https://github.com/darky/ts-fp-di)
+
 
 ## Limitations
 
