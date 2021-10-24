@@ -15,7 +15,11 @@
     "dependency",
     "injection",
     "typescript",
-    "ts"
+    "ts",
+    "async",
+    "local",
+    "storage",
+    "asynclocalstorage"
   ],
   "scripts": {
     "clean": "rimraf dist",
