@@ -71,6 +71,11 @@ diInit(() => {
   diExists() // true
 });
 ```
+
+## Plugins
+
+Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
+
 ## Ecosystem
 
 * [ts-fp-di-effector](https://github.com/darky/ts-fp-di-effector) - [Effector](https://effector.dev/) bindings for [ts-fp-di](https://github.com/darky/ts-fp-di)
