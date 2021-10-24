@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "async_hooks";
 
-export const _als = new AsyncLocalStorage<{ deps: Map<unknown, unknown>; once: Map<unknown, unknown>, [k: string]: unknown }>();
+export const als = new AsyncLocalStorage<{ deps: Map<unknown, unknown>; once: Map<unknown, unknown>; [k: string]: unknown }>();
 
 export const diDep = <T>(dep: T | string): T => {
   const store = storeOrError();
@@ -19,7 +19,7 @@ export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
 };
 
 export const diInit = <T>(cb: () => T) => {
-  return _als.run({ deps: new Map(), once: new Map() }, cb);
+  return als.run({ deps: new Map(), once: new Map() }, cb);
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {
@@ -36,7 +36,7 @@ export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
 };
 
 const storeOrError = () => {
-  const store = _als.getStore();
+  const store = als.getStore();
 
   if (store == null) {
     throw new Error('DI container not registered! Consider, that you call "diInit" before');
@@ -45,4 +45,4 @@ const storeOrError = () => {
   return store;
 };
 
-export const diExists = () => (_als.getStore() == null) === false;
+export const diExists = () => (als.getStore() == null) === false;
