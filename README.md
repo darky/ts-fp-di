@@ -76,11 +76,6 @@ diInit(() => {
 
 Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
 
-## Ecosystem
-
-* [ts-fp-di-effector](https://github.com/darky/ts-fp-di-effector) - [Effector](https://effector.dev/) Domain based on [ts-fp-di](https://github.com/darky/ts-fp-di)
-
-
 ## Limitations
 
 **ts-fp-di** based on Node.js AsyncLocalStorage and inherits limitations from it
