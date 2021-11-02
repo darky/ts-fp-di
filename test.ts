@@ -1,9 +1,10 @@
-import { test } from "uvu";
-import { equal, throws } from "uvu/assert";
+import { test } from 'uvu';
+import { equal, throws } from 'uvu/assert';
+import { createSandbox } from 'sinon';
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als } from "./index.js";
+import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als } from './index.js';
 
-test("diDep error before init", () => {
+test('diDep error before init', () => {
   const depFn = () => 1;
 
   const fn = (dep = diDep(depFn)) => dep();
@@ -11,13 +12,13 @@ test("diDep error before init", () => {
   throws(() => fn());
 });
 
-test("diSet error before init", () => {
+test('diSet error before init', () => {
   const depFn = () => 1;
 
   throws(() => diSet(depFn, () => 2));
 });
 
-test("diDep with default fn", () => {
+test('diDep with default fn', () => {
   diInit(() => {
     const depFn = () => 1;
 
@@ -27,7 +28,7 @@ test("diDep with default fn", () => {
   });
 });
 
-test("diDep with override fn", () => {
+test('diDep with override fn', () => {
   diInit(() => {
     const depFn = () => 1;
 
@@ -39,41 +40,41 @@ test("diDep with override fn", () => {
   });
 });
 
-test("diDep with string dep", () => {
+test('diDep with string dep', () => {
   diInit(() => {
-    const fn = (dep = diDep("test")) => dep;
+    const fn = (dep = diDep('test')) => dep;
 
-    diSet("test", "test");
+    diSet('test', 'test');
 
-    equal(fn(), "test");
+    equal(fn(), 'test');
   });
 });
 
-test("diDep error when not exists string dep", () => {
+test('diDep error when not exists string dep', () => {
   diInit(() => {
-    const fn = (dep = diDep("test")) => dep;
+    const fn = (dep = diDep('test')) => dep;
 
     throws(() => fn());
   });
 });
 
-test("diDep with string dep type generic support", () => {
+test('diDep with string dep type generic support', () => {
   diInit(() => {
-    const fn = (dep = diDep<boolean>("test")) => dep;
+    const fn = (dep = diDep<boolean>('test')) => dep;
 
-    diSet("test", true);
+    diSet('test', true);
 
     equal(fn(), true);
   });
 });
 
-test("diOnce error before init", () => {
+test('diOnce error before init', () => {
   const fn = diOnce(() => 1);
 
   throws(() => fn());
 });
 
-test("diOnce", () => {
+test('diOnce', () => {
   let i = 0;
   const fn = diOnce((n: number) => {
     i += n;
@@ -87,7 +88,7 @@ test("diOnce", () => {
   });
 });
 
-test("diOnceSet", () => {
+test('diOnceSet', () => {
   const fn = diOnce((n: number) => {
     return n + 1;
   });
@@ -98,21 +99,39 @@ test("diOnceSet", () => {
   });
 });
 
-test("diExists - false", () => {
-  equal(diExists(), false);
-});
-
-test("diExists - true", () => {
+test('expose als', () => {
   diInit(() => {
-    equal(diExists(), true);
+    const store = als.getStore();
+    equal(store?.deps.toString(), '[object Map]');
+    equal(store?.once.toString(), '[object Map]');
   });
 });
 
-test("expose als", () => {
+test('diInit flatten', () => {
+  let i = 0;
+
+  const sinon = createSandbox();
+  sinon.spy(als);
+
   diInit(() => {
-    const store = als.getStore();
-    equal(store?.deps.toString(), "[object Map]");
-    equal(store?.once.toString(), "[object Map]");
+    diInit(() => {
+      i++;
+    });
+  });
+
+  equal(i, 1);
+  equal((als.run as any).calledOnce, true);
+
+  sinon.restore();
+});
+
+test('diExists - false', () => {
+  equal(diExists(), false);
+});
+
+test('diExists - true', () => {
+  diInit(() => {
+    equal(diExists(), true);
   });
 });
 
