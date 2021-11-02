@@ -76,8 +76,6 @@ diInit(() => {
 
 Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
 
-## Limitations
+## Related
 
-**ts-fp-di** based on Node.js AsyncLocalStorage and inherits limitations from it
-
-https://nodejs.org/dist/latest-v17.x/docs/api/async_context.html#troubleshooting-context-loss
+* [effector-async-local-storage](https://github.com/darky/effector-async-local-storage) - Effector Domain based on AsyncLocalStorage
