@@ -79,3 +79,5 @@ Internal AsyncLocalStorage instance exposed as `als` property. You can implement
 ## Related
 
 * [effector-async-local-storage](https://github.com/darky/effector-async-local-storage) - Effector Domain based on AsyncLocalStorage
+
+* [effector-storify](https://github.com/darky/effector-storify) - Effector utils for storify Effect/Event
