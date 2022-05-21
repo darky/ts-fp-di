@@ -46,6 +46,14 @@ diSet('user', {login: 'xxx'}); // Useful to setup current user in DI scope
 diDep<User>('user') // Extract current user from anywhere
 ```
 
+#### State managment in DI scope
+
+```typescript
+const inc = dis((n: number, sum) => sum + n, 0); // setup Redux like state with reducer in DI scope
+inc(1); // mutate state
+inc(); // 1, "inc" without argument returns current state
+```
+
 #### Singleton for DI scope
 
 ```typescript
