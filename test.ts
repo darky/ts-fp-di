@@ -2,7 +2,7 @@ import { test } from 'uvu';
 import { equal, throws } from 'uvu/assert';
 import { createSandbox } from 'sinon';
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als } from './index.js';
+import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di } from './index.js';
 
 test('diDep error before init', () => {
   const depFn = () => 1;
@@ -18,13 +18,29 @@ test('diSet error before init', () => {
   throws(() => diSet(depFn, () => 2));
 });
 
+test('di with default fn', () => {
+  diInit(() => {
+    const depFn = di(() => 1);
+
+    equal(depFn(), 1);
+  });
+});
+
+test('di with override fn', () => {
+  diInit(() => {
+    const depFn = di(() => 1 as number);
+
+    diSet(depFn, () => 2);
+
+    equal(depFn(), 2);
+  });
+});
+
 test('diDep with default fn', () => {
   diInit(() => {
     const depFn = () => 1;
 
-    const fn = (dep = diDep(depFn)) => dep();
-
-    equal(fn(), 1);
+    equal(diDep(depFn)(), 1);
   });
 });
 
@@ -32,11 +48,9 @@ test('diDep with override fn', () => {
   diInit(() => {
     const depFn = () => 1;
 
-    const fn = (dep = diDep(depFn)) => dep();
-
     diSet(depFn, () => 2);
 
-    equal(fn(), 2);
+    equal(diDep(depFn)(), 2);
   });
 });
 

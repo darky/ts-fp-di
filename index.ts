@@ -6,6 +6,16 @@ export const als = new AsyncLocalStorage<{
   [k: string]: unknown;
 }>();
 
+export const di = <T extends Function>(fn: T): T => {
+  const overrideFn = function (this: unknown, ...args: unknown[]) {
+    const store = storeOrError();
+    const userDep = (store.deps as Map<T, T>).get(overrideFn);
+
+    return (userDep ?? fn).apply(this, args);
+  } as unknown as T;
+  return overrideFn;
+};
+
 export const diDep = <T>(dep: T | string): T => {
   const store = storeOrError();
   const userDep = (store.deps as Map<T | string, T>).get(dep);
