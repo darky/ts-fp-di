@@ -3,6 +3,7 @@ import { AsyncLocalStorage } from 'async_hooks';
 export const als = new AsyncLocalStorage<{
   deps: Map<unknown, unknown>;
   once: Map<unknown, unknown>;
+  state: Map<unknown, unknown>;
   [k: string]: unknown;
 }>();
 
@@ -14,6 +15,23 @@ export const di = <T extends Function>(fn: T): T => {
     return (userDep ?? fn).apply(this, args);
   } as unknown as T;
   return overrideFn;
+};
+
+export const dis = <P, S>(fn: (payload: P, state: S) => S, defaultState: S): ((payload?: P) => S) => {
+  const stateFn = function (this: unknown, payload?: P) {
+    const store = storeOrError();
+    const oldState = (store.state as Map<unknown, S>).get(stateFn);
+
+    if (payload == null) {
+      return oldState ?? defaultState;
+    }
+
+    const newState = fn(payload, oldState ?? defaultState);
+    store.state.set(stateFn, newState);
+
+    return newState;
+  };
+  return stateFn;
 };
 
 export const diDep = <T>(dep: T | string): T => {
@@ -33,7 +51,7 @@ export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
 };
 
 export const diInit = <T>(cb: () => T) => {
-  return diExists() ? cb() : als.run({ deps: new Map(), once: new Map() }, cb);
+  return diExists() ? cb() : als.run({ deps: new Map(), once: new Map(), state: new Map() }, cb);
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {

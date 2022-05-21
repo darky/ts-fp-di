@@ -4,7 +4,7 @@ import { createSandbox } from 'sinon';
 // TODO rewrite to ESM when @types/node >= 18
 const test: Function = require('node:test');
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di } from './index.js';
+import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis } from './index.js';
 
 test('diDep error before init', async () => {
   const depFn = () => 1;
@@ -18,6 +18,12 @@ test('diSet error before init', async () => {
   const depFn = () => 1;
 
   await assert.rejects(async () => diSet(depFn, () => 2));
+});
+
+test('dis error before init', async () => {
+  const inc = dis((n: number, sum) => sum + n, 0);
+
+  await assert.rejects(async () => inc());
 });
 
 test('di with default fn', () => {
@@ -81,6 +87,24 @@ test('diDep with string dep type generic support', () => {
     diSet('test', true);
 
     assert.equal(fn(), true);
+  });
+});
+
+test('dis default', () => {
+  diInit(() => {
+    const inc = dis((n: number, sum) => sum + n, 0);
+
+    assert.equal(inc(), 0);
+  });
+});
+
+test('dis simple', () => {
+  diInit(() => {
+    const inc = dis((n: number, sum) => sum + n, 0);
+
+    inc(1);
+
+    assert.equal(inc(1) + 1, 3);
   });
 });
 
