@@ -17,7 +17,7 @@ export const di = <T extends Function>(fn: T): T => {
   return overrideFn;
 };
 
-export const dis = <P, S>(fn: (payload: P, state: S) => S, defaultState: S): ((payload?: P) => S) => {
+export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S): ((payload?: P) => S) => {
   const stateFn = function (this: unknown, payload?: P) {
     const store = storeOrError();
     const oldState = (store.state as Map<unknown, S>).get(stateFn);
@@ -26,7 +26,7 @@ export const dis = <P, S>(fn: (payload: P, state: S) => S, defaultState: S): ((p
       return oldState ?? defaultState;
     }
 
-    const newState = fn(payload, oldState ?? defaultState);
+    const newState = fn(oldState ?? defaultState, payload);
     store.state.set(stateFn, newState);
 
     return newState;

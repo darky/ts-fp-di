@@ -21,7 +21,7 @@ test('diSet error before init', async () => {
 });
 
 test('dis error before init', async () => {
-  const inc = dis((n: number, sum) => sum + n, 0);
+  const inc = dis((sum, n: number) => sum + n, 0);
 
   await assert.rejects(async () => inc());
 });
@@ -92,7 +92,7 @@ test('diDep with string dep type generic support', () => {
 
 test('dis default', () => {
   diInit(() => {
-    const inc = dis((n: number, sum) => sum + n, 0);
+    const inc = dis((sum, n: number) => sum + n, 0);
 
     assert.equal(inc(), 0);
   });
@@ -100,7 +100,7 @@ test('dis default', () => {
 
 test('dis simple', () => {
   diInit(() => {
-    const inc = dis((n: number, sum) => sum + n, 0);
+    const inc = dis((sum, n: number) => sum + n, 0);
 
     inc(1);
 
