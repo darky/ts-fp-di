@@ -1,28 +1,30 @@
-import { test } from 'uvu';
-import { equal, throws } from 'uvu/assert';
+import assert from 'assert';
 import { createSandbox } from 'sinon';
+
+// TODO rewrite to ESM when @types/node >= 18
+const test: Function = require('node:test');
 
 import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di } from './index.js';
 
-test('diDep error before init', () => {
+test('diDep error before init', async () => {
   const depFn = () => 1;
 
   const fn = (dep = diDep(depFn)) => dep();
 
-  throws(() => fn());
+  await assert.rejects(async () => fn());
 });
 
-test('diSet error before init', () => {
+test('diSet error before init', async () => {
   const depFn = () => 1;
 
-  throws(() => diSet(depFn, () => 2));
+  await assert.rejects(async () => diSet(depFn, () => 2));
 });
 
 test('di with default fn', () => {
   diInit(() => {
     const depFn = di(() => 1);
 
-    equal(depFn(), 1);
+    assert.equal(depFn(), 1);
   });
 });
 
@@ -32,7 +34,7 @@ test('di with override fn', () => {
 
     diSet(depFn, () => 2);
 
-    equal(depFn(), 2);
+    assert.equal(depFn(), 2);
   });
 });
 
@@ -40,7 +42,7 @@ test('diDep with default fn', () => {
   diInit(() => {
     const depFn = () => 1;
 
-    equal(diDep(depFn)(), 1);
+    assert.equal(diDep(depFn)(), 1);
   });
 });
 
@@ -50,7 +52,7 @@ test('diDep with override fn', () => {
 
     diSet(depFn, () => 2);
 
-    equal(diDep(depFn)(), 2);
+    assert.equal(diDep(depFn)(), 2);
   });
 });
 
@@ -60,15 +62,15 @@ test('diDep with string dep', () => {
 
     diSet('test', 'test');
 
-    equal(fn(), 'test');
+    assert.equal(fn(), 'test');
   });
 });
 
-test('diDep error when not exists string dep', () => {
-  diInit(() => {
+test('diDep error when not exists string dep', async () => {
+  await diInit(async () => {
     const fn = (dep = diDep('test')) => dep;
 
-    throws(() => fn());
+    await assert.rejects(async () => fn());
   });
 });
 
@@ -78,14 +80,14 @@ test('diDep with string dep type generic support', () => {
 
     diSet('test', true);
 
-    equal(fn(), true);
+    assert.equal(fn(), true);
   });
 });
 
-test('diOnce error before init', () => {
+test('diOnce error before init', async () => {
   const fn = diOnce(() => 1);
 
-  throws(() => fn());
+  await assert.rejects(async () => fn());
 });
 
 test('diOnce', () => {
@@ -96,9 +98,9 @@ test('diOnce', () => {
   });
 
   diInit(() => {
-    equal(fn(1), 1);
-    equal(fn(1), 1);
-    equal(i, 1);
+    assert.equal(fn(1), 1);
+    assert.equal(fn(1), 1);
+    assert.equal(i, 1);
   });
 });
 
@@ -109,15 +111,15 @@ test('diOnceSet', () => {
 
   diInit(() => {
     diOnceSet(fn, 2);
-    equal(fn(4), 2);
+    assert.equal(fn(4), 2);
   });
 });
 
 test('expose als', () => {
   diInit(() => {
     const store = als.getStore();
-    equal(store?.deps.toString(), '[object Map]');
-    equal(store?.once.toString(), '[object Map]');
+    assert.equal(store?.deps.toString(), '[object Map]');
+    assert.equal(store?.once.toString(), '[object Map]');
   });
 });
 
@@ -133,20 +135,18 @@ test('diInit flatten', () => {
     });
   });
 
-  equal(i, 1);
-  equal((als.run as any).calledOnce, true);
+  assert.equal(i, 1);
+  assert.equal((als.run as any).calledOnce, true);
 
   sinon.restore();
 });
 
 test('diExists - false', () => {
-  equal(diExists(), false);
+  assert.equal(diExists(), false);
 });
 
 test('diExists - true', () => {
   diInit(() => {
-    equal(diExists(), true);
+    assert.equal(diExists(), true);
   });
 });
-
-test.run();
