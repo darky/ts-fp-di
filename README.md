@@ -19,11 +19,19 @@ Further, simply use **ts-fp-di** API "as is" in code, it will consider particula
 #### Basic
 
 ```typescript
-const fn = () => 1;
-diDep(fn)() // call `fn` function inside DI scope, it's return 1
+const fn = di(() => 1);
+fn() // call `fn` function inside DI scope, it's return 1
 ```
 
-#### Override dependency
+#### Override dependency (method 1)
+
+```typescript
+const fn = di(() => 1);
+diSet(fn, () => 2); // Override `fn` function inside DI scope. Useful for unit tests.
+fn() // returns 2, because it rewriten.
+```
+
+#### Override dependency (method 2)
 
 ```typescript
 const fn = () => 1;
