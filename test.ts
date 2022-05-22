@@ -4,7 +4,7 @@ import { createSandbox } from 'sinon';
 // TODO rewrite to ESM when @types/node >= 18
 const test: Function = require('node:test');
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis } from './index.js';
+import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState } from './index.js';
 
 test('diDep error before init', async () => {
   const depFn = () => 1;
@@ -106,6 +106,24 @@ test('dis simple', () => {
 
     assert.equal(inc(1) + 1, 3);
   });
+});
+
+test('dis global', () => {
+  const inc = dis((sum, n: number) => sum + n, 0, true);
+
+  inc(1);
+
+  assert.equal(inc(1) + 1, 3);
+});
+
+test('clearGlobalState', () => {
+  const inc = dis((sum, n: number) => sum + n, 0, true);
+
+  inc(1);
+
+  clearGlobalState();
+
+  assert.equal(inc(), 0);
 });
 
 test('diOnce error before init', async () => {

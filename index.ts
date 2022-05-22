@@ -7,6 +7,10 @@ export const als = new AsyncLocalStorage<{
   [k: string]: unknown;
 }>();
 
+const globalState = new Map<unknown, unknown>();
+
+export const clearGlobalState = () => globalState.clear();
+
 export const di = <T extends Function>(fn: T): T => {
   const overrideFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError();
@@ -17,17 +21,19 @@ export const di = <T extends Function>(fn: T): T => {
   return overrideFn;
 };
 
-export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S): ((payload?: P) => S) => {
+export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGlobal = false): ((payload?: P) => S) => {
   const stateFn = function (this: unknown, payload?: P) {
-    const store = storeOrError();
-    const oldState = (store.state as Map<unknown, S>).get(stateFn);
+    let store: ReturnType<typeof als.getStore>;
+    const stateMap = isGlobal ? globalState : ((store = storeOrError()), store.state as Map<unknown, S>);
+
+    const oldState = (stateMap as Map<unknown, S>).get(stateFn);
 
     if (payload == null) {
       return oldState ?? defaultState;
     }
 
     const newState = fn(oldState ?? defaultState, payload);
-    store.state.set(stateFn, newState);
+    stateMap.set(stateFn, newState);
 
     return newState;
   };
