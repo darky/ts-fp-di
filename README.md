@@ -49,9 +49,22 @@ diDep<User>('user') // Extract current user from anywhere
 #### State managment in DI scope
 
 ```typescript
-const inc = dis((sum, n: number) => sum + n, 0); // setup Redux like state with reducer in DI scope
+// setup Redux like state with reducer in DI scope
+const inc = dis((sum, n: number) => sum + n, 0); 
 inc(1); // mutate state
 inc(); // 1, "inc" without argument returns current state
+```
+
+#### State managment in global scope
+
+```typescript
+// setup Redux like state with reducer in global scope (pass true as isGlobal flag)
+const inc = dis((sum, n: number) => sum + n, 0, true); 
+inc(1); // mutate state
+inc(); // 1, "inc" without argument returns current state
+
+clearGlobalState(); // you can clear global state (useful in tests)
+inc() // 0, "inc" returns default value now
 ```
 
 #### Singleton for DI scope
