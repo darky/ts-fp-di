@@ -1,8 +1,6 @@
 import assert from 'assert';
+import test from 'node:test';
 import { createSandbox } from 'sinon';
-
-// TODO rewrite to ESM when @types/node >= 18
-const test: Function = require('node:test');
 
 import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState } from './index.js';
 
