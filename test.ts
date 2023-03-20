@@ -2,7 +2,7 @@ import assert from 'assert';
 import test from 'node:test';
 import { createSandbox } from 'sinon';
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState } from './index.js';
+import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState, diHas } from './index.js';
 
 test('diDep error before init', async () => {
   const depFn = () => 1;
@@ -188,5 +188,23 @@ test('diExists - false', () => {
 test('diExists - true', () => {
   diInit(() => {
     assert.equal(diExists(), true);
+  });
+});
+
+test('diHas true', () => {
+  diInit(() => {
+    const fn = (dep = diHas('test')) => dep;
+
+    diSet('test', true);
+
+    assert.equal(fn(), true);
+  });
+});
+
+test('diHas false', () => {
+  diInit(() => {
+    const fn = (dep = diHas('test')) => dep;
+
+    assert.equal(fn(), false);
   });
 });

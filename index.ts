@@ -56,6 +56,11 @@ export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
   store.deps.set(dep, value);
 };
 
+export const diHas = <T>(dep: T | string): boolean => {
+  const store = storeOrError();
+  return (store.deps as Map<T | string, T>).has(dep);
+};
+
 export const diInit = <T>(cb: () => T) => {
   return diExists() ? cb() : als.run({ deps: new Map(), once: new Map(), state: new Map() }, cb);
 };
