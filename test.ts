@@ -1,3 +1,4 @@
+import { AsyncLocalStorage } from 'async_hooks';
 import assert from 'assert';
 import test from 'node:test';
 import { createSandbox } from 'sinon';
@@ -179,6 +180,15 @@ test('diInit flatten', () => {
   assert.equal((als.run as any).calledOnce, true);
 
   sinon.restore();
+});
+
+test('diInit on existing als', async () => {
+  await new AsyncLocalStorage().run({}, async () => {
+    await diInit(async () => {
+      diSet('foo', 'bar');
+      assert.equal(diDep('foo'), 'bar')
+    })
+  })
 });
 
 test('diExists - false', () => {
