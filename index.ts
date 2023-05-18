@@ -1,11 +1,13 @@
 import { AsyncLocalStorage } from 'async_hooks';
 
-export const als = new AsyncLocalStorage<{
+type AlsContext = {
   deps: Map<unknown, unknown>;
   once: Map<unknown, unknown>;
   state: Map<unknown, unknown>;
   [k: string]: unknown;
-}>();
+}
+
+export const als = new AsyncLocalStorage<AlsContext>();
 
 const globalState = new Map<unknown, unknown>();
 
@@ -61,8 +63,8 @@ export const diHas = <T>(dep: T | string): boolean => {
   return (store.deps as Map<T | string, T>).has(dep);
 };
 
-export const diInit = <T>(cb: () => T) => {
-  return diExists() ? cb() : als.run({ deps: new Map(), once: new Map(), state: new Map() }, cb);
+export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
+  return diExists() ? cb() : als.run(ctx ?? { deps: new Map(), once: new Map(), state: new Map() }, cb);
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {

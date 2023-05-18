@@ -191,6 +191,17 @@ test('diInit on existing als', async () => {
   })
 });
 
+test('diInit can receive context', async () => {
+  const ctx = {
+    deps: new Map([['foo', 'bar']]),
+    state: new Map(),
+    once: new Map()
+  }
+  await diInit(async () => {
+    assert.equal(diDep('foo'), 'bar')
+  }, ctx)
+});
+
 test('diExists - false', () => {
   assert.equal(diExists(), false);
 });
