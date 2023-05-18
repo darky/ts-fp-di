@@ -101,6 +101,24 @@ diInit(() => {
 });
 ```
 
+#### Share DI scope
+
+```typescript
+const ctx = {
+  deps: new Map(),
+  state: new Map(),
+  once: new Map()
+}
+
+diInit(() => {
+  // ctx will be considered here
+}, ctx)
+
+diInit(() => {
+  // same ctx will be considered here too
+}, ctx)
+```
+
 ## Plugins
 
 Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
