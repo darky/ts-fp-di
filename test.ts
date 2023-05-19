@@ -203,6 +203,34 @@ test('diInit can receive context', async () => {
   }, ctx)
 });
 
+test('diInit can receive context event if parent context exists', async () => {
+  const ctx = {
+    deps: new Map([['foo', 'bar']]),
+    state: new Map(),
+    once: new Map()
+  }
+  await diInit(async () => {
+    diSet('test', true)
+    await diInit(async () => {
+      assert.equal(diDep('foo'), 'bar')
+    }, ctx)
+  })
+});
+
+test('if diInit receive context, don\'t miss parent context', async () => {
+  const ctx = {
+    deps: new Map([['foo', 'bar']]),
+    state: new Map(),
+    once: new Map()
+  }
+  await diInit(async () => {
+    diSet('test', true)
+    await diInit(async () => {
+      assert.equal(diDep('test'), true)
+    }, ctx)
+  })
+});
+
 test('diExists - false', () => {
   assert.equal(diExists(), false);
 });

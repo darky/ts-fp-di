@@ -64,7 +64,22 @@ export const diHas = <T>(dep: T | string): boolean => {
 };
 
 export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
-  return diExists() ? cb() : als.run(ctx ?? { deps: new Map(), once: new Map(), state: new Map() }, cb);
+  return diExists()
+    ? ctx 
+      ? als.run({
+        ...als.getStore(),
+        deps: new Map(
+          Array.from(als.getStore()!.deps.entries())
+            .concat(Array.from(ctx.deps.entries()))),
+        once: new Map(
+          Array.from(als.getStore()!.once.entries())
+            .concat(Array.from(ctx.once.entries()))),
+        state: new Map(
+          Array.from(als.getStore()!.state.entries())
+            .concat(Array.from(ctx.state.entries()))),
+      }, cb)
+      : cb()
+    : als.run(ctx ?? { deps: new Map(), once: new Map(), state: new Map() }, cb);
 };
 
 export const diOnce = <T extends Function>(fn: T): T => {
