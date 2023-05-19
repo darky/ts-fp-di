@@ -4,6 +4,7 @@ import test from 'node:test';
 import { createSandbox } from 'sinon';
 
 import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState, diHas } from './index.js';
+import EventEmitter from 'events';
 
 test('diDep error before init', async () => {
   const depFn = () => 1;
@@ -229,3 +230,44 @@ test('diHas false', () => {
     assert.equal(fn(), false);
   });
 });
+
+test('ensured di works inside setTimeout', async () => {
+  await diInit(async () => {
+    diSet('test', true)
+    return new Promise(resolve => {
+      setTimeout(() => {
+        assert.strictEqual(diDep('test'), true)
+        resolve(void 0)
+      }, 1)
+    })
+  })
+})
+
+test('ensured di works inside setInterval', async () => {
+  await diInit(async () => {
+    diSet('test', true)
+    return new Promise(resolve => {
+      const timer = setInterval(() => {
+        assert.strictEqual(diDep('test'), true)
+        clearInterval(timer)
+        resolve(void 0)
+      }, 1)
+    })
+  })
+})
+
+test('ensured di works inside event emitter', async () => {
+  await diInit(async () => {
+    diSet('test', true)
+    return new Promise(resolve => {
+      const emitter = new EventEmitter()
+      const listener = () => {
+        assert.strictEqual(diDep('test'), true)
+        emitter.off('event', listener)
+        resolve(void 0)
+      }
+      emitter.on('event', listener)
+      emitter.emit('event')
+    })
+  })
+})
