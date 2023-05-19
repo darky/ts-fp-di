@@ -91,5 +91,3 @@ const storeOrError = () => {
 };
 
 export const diExists = () => (als.getStore() == null) === false;
-
-export const diRawStore = () => als.getStore()
