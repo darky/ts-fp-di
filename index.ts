@@ -76,7 +76,7 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
           cb
         )
       : cb()
-    : als.run(ctx ?? { deps: new Map(), once: new Map(), state: new Map() }, cb)
+    : als.run(ctx ?? diContext(), cb)
 }
 
 export const diOnce = <T extends Function>(fn: T): T => {
@@ -92,6 +92,10 @@ export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
   store.once.set(fn, value)
 }
 
+export const diExists = () => (als.getStore() == null) === false
+
+export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map() })
+
 const storeOrError = () => {
   const store = als.getStore()
 
@@ -101,5 +105,3 @@ const storeOrError = () => {
 
   return store
 }
-
-export const diExists = () => (als.getStore() == null) === false

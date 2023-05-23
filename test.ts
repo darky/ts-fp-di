@@ -3,7 +3,20 @@ import assert from 'assert'
 import test from 'node:test'
 import { createSandbox } from 'sinon'
 
-import { diInit, diDep, diSet, diOnce, diExists, diOnceSet, als, di, dis, clearGlobalState, diHas } from './index.js'
+import {
+  diInit,
+  diDep,
+  diSet,
+  diOnce,
+  diExists,
+  diOnceSet,
+  als,
+  di,
+  dis,
+  clearGlobalState,
+  diHas,
+  diContext,
+} from './index.js'
 import EventEmitter from 'events'
 
 test('diDep error before init', async () => {
@@ -297,5 +310,13 @@ test('ensured di works inside event emitter', async () => {
       emitter.on('event', listener)
       emitter.emit('event')
     })
+  })
+})
+
+test('diContext', () => {
+  assert.deepEqual(diContext(), {
+    deps: new Map(),
+    once: new Map(),
+    state: new Map(),
   })
 })
