@@ -96,6 +96,21 @@ export const diExists = () => (als.getStore() == null) === false
 
 export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map() })
 
+export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () => void): T => {
+  const ctx = diContext()
+  if (init) {
+    diInit(init, ctx)
+  }
+  return Object.fromEntries(
+    Object.entries(scope).map(([key, fn]) => [
+      key,
+      function (this: unknown, ...args: unknown[]) {
+        return diInit(() => fn.apply(this, args), ctx)
+      },
+    ])
+  ) as T
+}
+
 const storeOrError = () => {
   const store = als.getStore()
 

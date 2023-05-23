@@ -16,6 +16,7 @@ import {
   clearGlobalState,
   diHas,
   diContext,
+  diScope,
 } from './index.js'
 import EventEmitter from 'events'
 
@@ -343,4 +344,23 @@ test('diContext', () => {
     once: new Map(),
     state: new Map(),
   })
+})
+
+test('diScope', () => {
+  const inc = dis((resp: number, n: number) => resp + n, 0)
+  const checkScope = di((scope: string) => diDep<boolean>(scope))
+
+  const scope1 = diScope({ inc, checkScope }, () => diSet('scope1', true))
+  const scope2 = diScope({ inc, checkScope }, () => diSet('scope2', true))
+
+  assert.strictEqual(scope1.checkScope('scope1'), true)
+  assert.rejects(async () => scope1.checkScope('scope2'), new Error('Dependency with key scope2 not registered!'))
+  assert.strictEqual(scope2.checkScope('scope2'), true)
+  assert.rejects(async () => scope2.checkScope('scope1'), new Error('Dependency with key scope1 not registered!'))
+
+  scope1.inc(2)
+  scope2.inc(5)
+
+  assert.strictEqual(scope1.inc(), 2)
+  assert.strictEqual(scope2.inc(), 5)
 })
