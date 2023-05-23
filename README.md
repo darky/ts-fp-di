@@ -101,14 +101,10 @@ diInit(() => {
 });
 ```
 
-#### Share DI scope
+#### Share DI context
 
 ```typescript
-const ctx = {
-  deps: new Map(),
-  state: new Map(),
-  once: new Map()
-}
+const ctx = diContext()
 
 diInit(() => {
   // ctx will be considered here
@@ -117,6 +113,20 @@ diInit(() => {
 diInit(() => {
   // same ctx will be considered here too
 }, ctx)
+```
+
+#### DI Scope (OOP incapsulation alternative)
+
+```typescript
+const inc = dis((resp: number, n: number) => resp + n, 0)
+
+const scope = diScope({ inc }, () => {
+  // optional "constructor" function
+  // some `diSet` can be used here
+})
+
+scope.inc(5) // this mutation occur only inside this scope
+scope.inc() // 5 
 ```
 
 ## Plugins
