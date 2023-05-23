@@ -297,6 +297,18 @@ test('ensured di works inside setInterval', async () => {
   })
 })
 
+test('ensured di works inside setImmediate', async () => {
+  await diInit(async () => {
+    diSet('test', true)
+    return new Promise(resolve => {
+      setImmediate(() => {
+        assert.strictEqual(diDep('test'), true)
+        resolve(void 0)
+      })
+    })
+  })
+})
+
 test('ensured di works inside event emitter', async () => {
   await diInit(async () => {
     diSet('test', true)
@@ -309,6 +321,18 @@ test('ensured di works inside event emitter', async () => {
       }
       emitter.on('event', listener)
       emitter.emit('event')
+    })
+  })
+})
+
+test('ensured di works inside process.nextTick', async () => {
+  await diInit(async () => {
+    diSet('test', true)
+    return new Promise(resolve => {
+      process.nextTick(() => {
+        assert.strictEqual(diDep('test'), true)
+        resolve(void 0)
+      })
     })
   })
 })
