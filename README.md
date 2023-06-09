@@ -133,6 +133,6 @@ scope.inc() // 5
 
 Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
 
-## Related
+‼️ If you use ts-fp-di with plugins on your project, please consider, that you have only one ts-fp-di *node_module*
 
 * [ts-fp-di-mikroorm](https://github.com/darky/ts-fp-di-mikroorm) - Use MikroORM Entities inside ts-fp-di State and achieve auto persistence in DB
