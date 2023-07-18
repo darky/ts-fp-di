@@ -80,6 +80,15 @@ fn(); // 1
 fn(); // also 1, because fn is singleton for DI scope
 ```
 
+#### Singleton constant for DI scope
+
+```typescript
+const cache = dic<number>()
+
+cache(1)
+cache() // 1
+```
+
 #### Override Singleton for DI scope
 
 ```typescript
