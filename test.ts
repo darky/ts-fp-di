@@ -17,6 +17,7 @@ import {
   diHas,
   diContext,
   diScope,
+  dic,
 } from './index.js'
 import EventEmitter from 'events'
 
@@ -363,4 +364,12 @@ test('diScope', () => {
 
   assert.strictEqual(scope1.inc(), 2)
   assert.strictEqual(scope2.inc(), 5)
+})
+
+test('dic', () => {
+  const n = dic<number>()
+  diInit(() => {
+    n(1)
+    assert.strictEqual(n(), 1)
+  })
 })
