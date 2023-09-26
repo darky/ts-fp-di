@@ -83,7 +83,7 @@ fn(); // also 1, because fn is singleton for DI scope
 #### Singleton constant for DI scope
 
 ```typescript
-const cache = dic<number>()
+const cache = dic<number>((n) => {/* optional hook for receiving passed value */})
 
 cache(1)
 cache() // 1
