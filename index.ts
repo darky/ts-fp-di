@@ -23,7 +23,7 @@ export const di = <T extends Function>(fn: T): T => {
   return overrideFn
 }
 
-export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGlobal = false): ((payload?: P) => S) => {
+export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGlobal = false) => {
   const stateFn = function (this: unknown, payload?: P) {
     let store: ReturnType<typeof als.getStore>
     const stateMap = isGlobal ? globalState : ((store = storeOrError()), store.state as Map<unknown, S>)
@@ -39,7 +39,11 @@ export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGl
 
     return newState
   }
-  return stateFn
+  return Object.assign(stateFn, {
+    map<R>(fn: (x: S) => R) {
+      return () => fn(stateFn())
+    },
+  })
 }
 
 export const diDep = <T>(dep: T | string): T => {

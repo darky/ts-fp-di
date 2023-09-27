@@ -131,6 +131,18 @@ test('dis global', () => {
   assert.equal(inc(1) + 1, 3)
 })
 
+test('dis map', () => {
+  diInit(() => {
+    const inc = dis((sum, n: number) => sum + n, 0)
+    const s = inc.map(n => `string - ${n}`)
+
+    inc(1)
+
+    assert.equal(inc(1) + 1, 3)
+    assert.strictEqual(s(), 'string - 2')
+  })
+})
+
 test('clearGlobalState', () => {
   const inc = dis((sum, n: number) => sum + n, 0, true)
 
