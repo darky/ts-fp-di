@@ -111,7 +111,14 @@ export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () =>
   ) as T
 }
 
-export const dic = <T>() => diOnce((x?: T) => x as T)
+export const dic = <T>() => {
+  const dio = diOnce((x?: T) => x as T)
+  return Object.assign(dio, {
+    map<R>(fn: (x: T) => R) {
+      return () => fn(dio())
+    },
+  })
+}
 
 const storeOrError = () => {
   const store = als.getStore()

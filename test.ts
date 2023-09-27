@@ -373,3 +373,13 @@ test('dic', () => {
     assert.strictEqual(n(), 1)
   })
 })
+
+test('dic map', () => {
+  const n = dic<number>()
+  const s = n.map(n => `string - ${n}`)
+  diInit(() => {
+    n(1)
+    assert.strictEqual(n(), 1)
+    assert.strictEqual(s(), 'string - 1')
+  })
+})
