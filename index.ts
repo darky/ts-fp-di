@@ -83,12 +83,17 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
     : als.run(ctx ?? diContext(), cb)
 }
 
-export const diOnce = <T extends Function>(fn: T): T => {
-  const onceFn = function (this: unknown, ...args: unknown[]) {
+export const diOnce = <T extends (...args: any) => any>(fn: T) => {
+  const onceFn = function (this: unknown, ...args: Parameters<T>) {
     const store = storeOrError()
     return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn)
   } as unknown as T
-  return onceFn
+
+  return Object.assign(onceFn, {
+    map<R>(fn: (x: Parameters<T>[0]) => R) {
+      return () => fn(onceFn())
+    },
+  })
 }
 
 export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {

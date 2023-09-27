@@ -173,6 +173,18 @@ test('diOnce', () => {
   })
 })
 
+test('diOnce map', () => {
+  const fn = diOnce((n: number) => {
+    return n
+  })
+  const s = fn.map(n => `string - ${n}`)
+
+  diInit(() => {
+    assert.equal(fn(1), 1)
+    assert.equal(s(), 'string - 1')
+  })
+})
+
 test('diOnceSet', () => {
   const fn = diOnce((n: number) => {
     return n + 1
