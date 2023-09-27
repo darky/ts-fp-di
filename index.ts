@@ -39,11 +39,7 @@ export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGl
 
     return newState
   }
-  return Object.assign(stateFn, {
-    map<R>(fn: (x: S) => R) {
-      return () => fn(stateFn())
-    },
-  })
+  return Object.assign(stateFn, frpMixin<S>(stateFn))
 }
 
 export const diDep = <T>(dep: T | string): T => {
@@ -89,11 +85,7 @@ export const diOnce = <T extends (...args: any) => any>(fn: T) => {
     return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn)
   } as unknown as T
 
-  return Object.assign(onceFn, {
-    map<R>(fn: (x: Parameters<T>[0]) => R) {
-      return () => fn(onceFn())
-    },
-  })
+  return Object.assign(onceFn, frpMixin<Parameters<T>[0]>(onceFn))
 }
 
 export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
@@ -121,13 +113,15 @@ export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () =>
 }
 
 export const dic = <T>() => {
-  const dio = diOnce((x?: T) => x as T)
-  return Object.assign(dio, {
-    map<R>(fn: (x: T) => R) {
-      return () => fn(dio())
-    },
-  })
+  const dio: (x?: T | undefined) => T = diOnce((x?: T) => x as T)
+  return Object.assign(dio, frpMixin<T>(dio))
 }
+
+const frpMixin = <T>(fn: () => any) => ({
+  map<R>(pred: (x: T) => R) {
+    return () => pred(fn())
+  },
+})
 
 const storeOrError = () => {
   const store = als.getStore()

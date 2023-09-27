@@ -134,12 +134,12 @@ test('dis global', () => {
 test('dis map', () => {
   diInit(() => {
     const inc = dis((sum, n: number) => sum + n, 0)
-    const s = inc.map(n => `string - ${n}`)
+    const s = inc.map(n => `string - ${n + 1}`)
 
     inc(1)
 
     assert.equal(inc(1) + 1, 3)
-    assert.strictEqual(s(), 'string - 2')
+    assert.strictEqual(s().substring(0, 999), 'string - 3')
   })
 })
 
@@ -177,11 +177,11 @@ test('diOnce map', () => {
   const fn = diOnce((n: number) => {
     return n
   })
-  const s = fn.map(n => `string - ${n}`)
+  const s = fn.map(n => `string - ${n + 1}`)
 
   diInit(() => {
     assert.equal(fn(1), 1)
-    assert.equal(s(), 'string - 1')
+    assert.equal(s().substring(0, 999), 'string - 2')
   })
 })
 
@@ -400,10 +400,10 @@ test('dic', () => {
 
 test('dic map', () => {
   const n = dic<number>()
-  const s = n.map(n => `string - ${n}`)
+  const s = n.map(n => `string - ${n + 1}`)
   diInit(() => {
     n(1)
     assert.strictEqual(n(), 1)
-    assert.strictEqual(s(), 'string - 1')
+    assert.strictEqual(s().substring(0, 999), 'string - 2')
   })
 })
