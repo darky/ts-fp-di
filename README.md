@@ -83,7 +83,7 @@ fn(); // also 1, because fn is singleton for DI scope
 #### Singleton constant for DI scope
 
 ```typescript
-const cache = dic<number>((n) => {/* optional hook for receiving passed value */})
+const cache = dic<number>()
 
 cache(1)
 cache() // 1
@@ -136,6 +136,30 @@ const scope = diScope({ inc }, () => {
 
 scope.inc(5) // this mutation occur only inside this scope
 scope.inc() // 5 
+```
+
+#### Functional reactive programming, FRP map
+
+```typescript
+const cacheNumber = dic<number>()
+const cacheString = cacheNumber.map(n => `string - ${n}`)
+
+cache(5)
+cacheString() // "string - 5"
+
+const onceNumber = diOnce((n: number) => {
+  return n;
+});
+const onceString = onceNumber.map(n => `string - ${n}`)
+
+onceNumber(5)
+onceString() // "string - 5"
+
+const inc = dis((sum, n: number) => sum + n, 0);
+const incString = inc.map(s => `string - ${s}`)
+inc(1);
+inc(4);
+incString() // "string - 5"
 ```
 
 ## Plugins
