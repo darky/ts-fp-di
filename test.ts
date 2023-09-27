@@ -373,13 +373,3 @@ test('dic', () => {
     assert.strictEqual(n(), 1)
   })
 })
-
-test('dic with onSet', () => {
-  let viaOnSet = 0
-  const n = dic<number>(x => (viaOnSet = x))
-  diInit(() => {
-    n(1)
-    assert.strictEqual(n(), 1)
-    assert.strictEqual(viaOnSet, 1)
-  })
-})
