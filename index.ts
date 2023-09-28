@@ -119,7 +119,8 @@ export const dic = <T>() => {
 
 const frpMixin = <T>(fn: () => any) => ({
   map<R>(pred: (x: T) => R) {
-    return () => pred(fn())
+    const f = () => pred(fn())
+    return Object.assign(f, frpMixin<R>(f))
   },
 })
 

@@ -407,3 +407,13 @@ test('dic map', () => {
     assert.strictEqual(s().substring(0, 999), 'string - 2')
   })
 })
+
+test('dic map recursive', () => {
+  const n = dic<number>()
+  const s = n.map(n => `string - ${n + 1}`)
+  const l = s.map(s => s.length)
+  diInit(() => {
+    n(1)
+    assert.strictEqual(l() + 1, 11)
+  })
+})
