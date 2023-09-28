@@ -417,3 +417,14 @@ test('dic map recursive', () => {
     assert.strictEqual(l() + 1, 11)
   })
 })
+
+test('mapWith', () => {
+  const n = dic<number>()
+  const s = dic<string>()
+  const comb = s.mapWith((s, n) => `${s} ${n}`, n)
+  diInit(() => {
+    n(1)
+    s('test')
+    assert.strictEqual(comb().substring(0, 999), 'test 1')
+  })
+})

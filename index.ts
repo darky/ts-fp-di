@@ -117,10 +117,26 @@ export const dic = <T>() => {
   return Object.assign(dio, frpMixin<T>(dio))
 }
 
-const frpMixin = <T>(fn: () => any) => ({
+type FrpMixin<T> = {
+  map<R>(pred: (x: T) => R): (() => R) & FrpMixin<R>
+  mapWith<R, F1>(pred: (x: T, r1: F1) => R, f1: () => F1): (() => R) & FrpMixin<R>
+  mapWith<R, F1, F2>(pred: (x: T, r1: F1, f2: F2) => R, f1: () => F1, f2: () => F2): (() => R) & FrpMixin<R>
+  mapWith<R, F1, F2, F3>(
+    pred: (x: T, r1: F1, f2: F2, f3: F3) => R,
+    f1: () => F1,
+    f2: () => F2,
+    f3: () => F3
+  ): (() => R) & FrpMixin<R>
+}
+
+const frpMixin = <T>(fn: () => any): FrpMixin<T> => ({
   map<R>(pred: (x: T) => R) {
     const f = () => pred(fn())
     return Object.assign(f, frpMixin<R>(f))
+  },
+  mapWith(pred: (...args: T[]) => unknown, ...fns: (() => T)[]) {
+    const f = () => pred(fn(), ...fns.map(f => f()))
+    return Object.assign(f, frpMixin(f))
   },
 })
 
