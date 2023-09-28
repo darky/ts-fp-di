@@ -138,11 +138,11 @@ scope.inc(5) // this mutation occur only inside this scope
 scope.inc() // 5 
 ```
 
-#### Functional reactive programming, FRP map
+#### Functional reactive programming, mapping
 
 ```typescript
 const cacheNumber = dic<number>()
-const cacheString = cacheNumber.map(n => `string - ${n}`)
+const cacheString = diMap(n => `string - ${n}`, cacheNumber)
 
 cache(5)
 cacheString() // "string - 5"
@@ -150,13 +150,13 @@ cacheString() // "string - 5"
 const onceNumber = diOnce((n: number) => {
   return n;
 });
-const onceString = onceNumber.map(n => `string - ${n}`)
+const onceString = diMap(n => `string - ${n}`, onceNumber)
 
 onceNumber(5)
 onceString() // "string - 5"
 
 const inc = dis((sum, n: number) => sum + n, 0);
-const incString = inc.map(s => `string - ${s}`)
+const incString = diMap(s => `string - ${s}`, inc)
 inc(1);
 inc(4);
 incString() // "string - 5"
