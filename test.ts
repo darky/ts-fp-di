@@ -18,6 +18,7 @@ import {
   diContext,
   diScope,
   dic,
+  diMap,
 } from './index.js'
 import EventEmitter from 'events'
 
@@ -131,10 +132,10 @@ test('dis global', () => {
   assert.equal(inc(1) + 1, 3)
 })
 
-test('dis map', () => {
+test('dis diMap', () => {
   diInit(() => {
     const inc = dis((sum, n: number) => sum + n, 0)
-    const s = inc.map(n => `string - ${n + 1}`)
+    const s = diMap(n => `string - ${n + 1}`, inc)
 
     inc(1)
 
@@ -173,11 +174,11 @@ test('diOnce', () => {
   })
 })
 
-test('diOnce map', () => {
+test('diOnce diMap', () => {
   const fn = diOnce((n: number) => {
     return n
   })
-  const s = fn.map(n => `string - ${n + 1}`)
+  const s = diMap(n => `string - ${n + 1}`, fn)
 
   diInit(() => {
     assert.equal(fn(1), 1)
@@ -398,9 +399,9 @@ test('dic', () => {
   })
 })
 
-test('dic map', () => {
+test('dic diMap', () => {
   const n = dic<number>()
-  const s = n.map(n => `string - ${n + 1}`)
+  const s = diMap(n => `string - ${n + 1}`, n)
   diInit(() => {
     n(1)
     assert.strictEqual(n(), 1)
@@ -408,20 +409,20 @@ test('dic map', () => {
   })
 })
 
-test('dic map recursive', () => {
+test('diMap n times', () => {
   const n = dic<number>()
-  const s = n.map(n => `string - ${n + 1}`)
-  const l = s.map(s => s.length)
+  const s = diMap(n => `string - ${n + 1}`, n)
+  const l = diMap(s => s.length, s)
   diInit(() => {
     n(1)
     assert.strictEqual(l() + 1, 11)
   })
 })
 
-test('mapWith', () => {
+test('diMap multiple args', () => {
   const n = dic<number>()
   const s = dic<string>()
-  const comb = s.mapWith((s, n) => `${s} ${n}`, n)
+  const comb = diMap((s, n) => `${s.substring(0, 999)} ${n - 1 + 1}`, s, n)
   diInit(() => {
     n(1)
     s('test')

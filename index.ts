@@ -39,7 +39,7 @@ export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGl
 
     return newState
   }
-  return Object.assign(stateFn, frpMixin<S>(stateFn))
+  return stateFn
 }
 
 export const diDep = <T>(dep: T | string): T => {
@@ -85,7 +85,7 @@ export const diOnce = <T extends (...args: any) => any>(fn: T) => {
     return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn)
   } as unknown as T
 
-  return Object.assign(onceFn, frpMixin<Parameters<T>[0]>(onceFn))
+  return onceFn
 }
 
 export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
@@ -114,31 +114,24 @@ export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () =>
 
 export const dic = <T>() => {
   const dio: (x?: T | undefined) => T = diOnce((x?: T) => x as T)
-  return Object.assign(dio, frpMixin<T>(dio))
+  return dio
 }
 
-type FrpMixin<T> = {
-  map<R>(pred: (x: T) => R): (() => R) & FrpMixin<R>
-  mapWith<R, F1>(pred: (x: T, r1: F1) => R, f1: () => F1): (() => R) & FrpMixin<R>
-  mapWith<R, F1, F2>(pred: (x: T, r1: F1, f2: F2) => R, f1: () => F1, f2: () => F2): (() => R) & FrpMixin<R>
-  mapWith<R, F1, F2, F3>(
-    pred: (x: T, r1: F1, f2: F2, f3: F3) => R,
-    f1: () => F1,
-    f2: () => F2,
-    f3: () => F3
-  ): (() => R) & FrpMixin<R>
+export function diMap<T1, R>(pred: (x1: T1) => R, fn1: (...args: any[]) => T1): () => R
+export function diMap<T1, T2, R>(
+  pred: (x1: T1, x2: T2) => R,
+  fn1: (...args: any[]) => T1,
+  fn2: (...args: any[]) => T2
+): () => R
+export function diMap<T1, T2, T3, R>(
+  pred: (x1: T1, x2: T2, x3: T3) => R,
+  fn1: (...args: any[]) => T1,
+  fn2: (...args: any[]) => T2,
+  fn3: (...args: any[]) => T3
+): () => R
+export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) {
+  return () => pred(...fns.map(f => f()))
 }
-
-const frpMixin = <T>(fn: () => any): FrpMixin<T> => ({
-  map<R>(pred: (x: T) => R) {
-    const f = () => pred(fn())
-    return Object.assign(f, frpMixin<R>(f))
-  },
-  mapWith(pred: (...args: T[]) => unknown, ...fns: (() => T)[]) {
-    const f = () => pred(fn(), ...fns.map(f => f()))
-    return Object.assign(f, frpMixin(f))
-  },
-})
 
 const storeOrError = () => {
   const store = als.getStore()
