@@ -166,7 +166,21 @@ incString() // "string - 5"
 
 Internal AsyncLocalStorage instance exposed as `als` property. You can implement your own plugin around it.
 
-‼️ If you use ts-fp-di with plugins on your project, please consider, that you have only one ts-fp-di *node_module*
+‼️ If you use ts-fp-di with plugins on your project, please consider, that you have only one ts-fp-di *node_module*<br/>
+For example you can freeze as singleton you dependency via *package.json* `overrides`
+
+```json
+{
+  "overrides": {
+    "ts-fp-di": "^x.x.x"
+  }
+}
+
+
+```
+
+
+
 
 * [ts-fp-di-mikroorm](https://github.com/darky/ts-fp-di-mikroorm) - Use MikroORM Entities inside ts-fp-di State and achieve auto persistence in DB
 * [rxjs-wait-next](https://github.com/darky/rxjs-wait-next) - Wait RxJS Subject.next emition for all subscribers
