@@ -237,6 +237,7 @@ test('diInit can receive context', async () => {
     deps: new Map([['foo', 'bar']]),
     state: new Map(),
     once: new Map(),
+    derived: new Map(),
   }
   await diInit(async () => {
     assert.equal(diDep('foo'), 'bar')
@@ -248,6 +249,7 @@ test('diInit can receive context event if parent context exists', async () => {
     deps: new Map([['foo', 'bar']]),
     state: new Map(),
     once: new Map(),
+    derived: new Map(),
   }
   await diInit(async () => {
     diSet('test', true)
@@ -262,6 +264,7 @@ test("if diInit receive context, don't miss parent context", async () => {
     deps: new Map([['foo', 'bar']]),
     state: new Map(),
     once: new Map(),
+    derived: new Map(),
   }
   await diInit(async () => {
     diSet('test', true)
@@ -369,6 +372,7 @@ test('diContext', () => {
     deps: new Map(),
     once: new Map(),
     state: new Map(),
+    derived: new Map(),
   })
 })
 

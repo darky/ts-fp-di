@@ -4,6 +4,7 @@ type AlsContext = {
   deps: Map<unknown, unknown>
   once: Map<unknown, unknown>
   state: Map<unknown, unknown>
+  derived: Map<unknown, unknown>
   [k: string]: unknown
 }
 
@@ -72,6 +73,7 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
             deps: new Map(Array.from(als.getStore()!.deps.entries()).concat(Array.from(ctx.deps.entries()))),
             once: new Map(Array.from(als.getStore()!.once.entries()).concat(Array.from(ctx.once.entries()))),
             state: new Map(Array.from(als.getStore()!.state.entries()).concat(Array.from(ctx.state.entries()))),
+            derived: new Map(Array.from(als.getStore()!.derived.entries()).concat(Array.from(ctx.derived.entries()))),
           },
           cb
         )
@@ -95,7 +97,7 @@ export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
 
 export const diExists = () => (als.getStore() == null) === false
 
-export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map() })
+export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map(), derived: new Map() })
 
 export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () => void): T => {
   const ctx = diContext()
