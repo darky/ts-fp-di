@@ -433,3 +433,13 @@ test('diMap multiple args', () => {
     assert.strictEqual(comb().substring(0, 999), 'test 1')
   })
 })
+
+test('diMap should mutate derived', () => {
+  const n = dic<number>()
+  const s = diMap(n => `string - ${n + 1}`, n)
+  diInit(() => {
+    n(1)
+    s()
+    assert.deepStrictEqual(Array.from(als.getStore()?.derived.values() ?? []), ['string - 2'])
+  })
+})

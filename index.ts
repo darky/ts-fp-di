@@ -132,7 +132,12 @@ export function diMap<T1, T2, T3, R>(
   fn3: (...args: any[]) => T3
 ): () => R
 export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) {
-  return () => pred(...fns.map(f => f()))
+  const diMapFn = () => {
+    const r = pred(...fns.map(f => f()))
+    storeOrError().derived.set(diMapFn, r)
+    return r
+  }
+  return diMapFn
 }
 
 const storeOrError = () => {
