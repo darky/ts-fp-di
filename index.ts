@@ -131,6 +131,21 @@ export function diMap<T1, T2, T3, R>(
   fn2: (...args: any[]) => T2,
   fn3: (...args: any[]) => T3
 ): () => R
+export function diMap<T1, T2, T3, T4, R>(
+  pred: (x1: T1, x2: T2, x3: T3, x4: T4) => R,
+  fn1: (...args: any[]) => T1,
+  fn2: (...args: any[]) => T2,
+  fn3: (...args: any[]) => T3,
+  fn4: (...args: any[]) => T4
+): () => R
+export function diMap<T1, T2, T3, T4, T5, R>(
+  pred: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5) => R,
+  fn1: (...args: any[]) => T1,
+  fn2: (...args: any[]) => T2,
+  fn3: (...args: any[]) => T3,
+  fn4: (...args: any[]) => T4,
+  fn5: (...args: any[]) => T5
+): () => R
 export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) {
   const diMapFn = () => {
     const r = pred(...fns.map(f => f()))
