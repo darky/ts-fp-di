@@ -443,3 +443,9 @@ test('diMap should mutate derived', () => {
     assert.deepStrictEqual(Array.from(als.getStore()?.derived.values() ?? []), ['string - 2'])
   })
 })
+
+test('diMap raw', () => {
+  const n = dic<number>()
+  const s = diMap(n => `string - ${n + 1}`, n)
+  assert.strictEqual(s.raw(1), 'string - 2')
+})
