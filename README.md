@@ -160,6 +160,8 @@ const incString = diMap(s => `string - ${s}`, inc)
 inc(1);
 inc(4);
 incString() // "string - 5"
+
+incString.raw(1) // direct call of function, useful for unit tests
 ```
 
 ## Plugins
@@ -178,9 +180,6 @@ For example you can freeze as singleton you dependency via *package.json* `overr
 
 
 ```
-
-
-
 
 * [ts-fp-di-mikroorm](https://github.com/darky/ts-fp-di-mikroorm) - Use MikroORM Entities inside ts-fp-di State and achieve auto persistence in DB
 * [rxjs-wait-next](https://github.com/darky/rxjs-wait-next) - Wait RxJS Subject.next emition for all subscribers
