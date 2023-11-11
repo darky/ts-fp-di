@@ -34,9 +34,9 @@
   "author": "Vladislav Botvin",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^20.8.7",
-    "@types/sinon": "^10.0.20",
-    "sinon": "^17.0.0",
+    "@types/node": "^20.9.0",
+    "@types/sinon": "^17.0.1",
+    "sinon": "^17.0.1",
     "typescript": "5.2.2"
   }
 }
