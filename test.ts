@@ -19,6 +19,7 @@ import {
   diScope,
   dic,
   diMap,
+  dise,
 } from './index.js'
 import EventEmitter from 'events'
 
@@ -448,4 +449,16 @@ test('diMap raw', () => {
   const n = dic<number>()
   const s = diMap(n => `string - ${n + 1}`, n)
   assert.strictEqual(s.raw(1), 'string - 2')
+})
+
+test('dise', async () => {
+  await diInit(async () => {
+    const n = dic<number>()
+    n(1)
+    const s = diMap(n => `string - ${n + 1}`, n)
+    const output = dic<string>()
+    const se = dise(async (n, s) => `${n} ${s}`, output, n, s)
+    const resp = await se()
+    assert.strictEqual(resp, '1 string - 2')
+  })
 })
