@@ -144,7 +144,7 @@ scope.inc() // 5
 const cacheNumber = dic<number>()
 const cacheString = diMap(n => `string - ${n}`, cacheNumber)
 
-cache(5)
+cacheNumber(5)
 cacheString() // "string - 5"
 
 const onceNumber = diOnce((n: number) => {
@@ -162,6 +162,23 @@ inc(4);
 incString() // "string - 5"
 
 incString.raw(1) // direct call of function, useful for unit tests
+```
+
+#### Attach async effect to State
+
+```typescript
+const numberState = dic<number>()
+const stringState = diMap(n => `string - ${n}`, numberState)
+const seState = dic<string>() // will be populated via side effect
+const se = dise(
+  async (n, s) => `${n} ${s}`, // side effect async function
+  seState, // this state will be populated via async response
+  n, // optional arg1 for effect function
+  s) // optional arg2 for effect function
+
+await se()
+
+seState() // "5 string - 5"
 ```
 
 ## Plugins
