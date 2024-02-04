@@ -199,4 +199,5 @@ For example you can freeze as singleton you dependency via *package.json* `overr
 ```
 
 * [ts-fp-di-mikroorm](https://github.com/darky/ts-fp-di-mikroorm) - Use MikroORM Entities inside ts-fp-di State and achieve auto persistence in DB
+* [ts-fp-di-rxjs](https://github.com/darky/ts-fp-di-rxjs) - Utils for RxJS for working with ts-fp-di
 * [rxjs-wait-next](https://github.com/darky/rxjs-wait-next) - Wait RxJS Subject.next emition for all subscribers
