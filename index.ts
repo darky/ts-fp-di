@@ -210,6 +210,9 @@ export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unkn
   return Object.assign(diMapFn, { raw: pred })
 }
 
+export const diMapOnce: typeof diMap = (raw: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) =>
+  Object.assign(diOnce(diMap(raw, ...(fns as [() => unknown]))), { raw })
+
 export function dise<R>(effect: () => Promise<R>, dicOutput: (x: R) => R): () => Promise<R>
 export function dise<R, T1>(
   effect: (x1: T1) => Promise<R>,

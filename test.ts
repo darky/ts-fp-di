@@ -20,6 +20,7 @@ import {
   dic,
   diMap,
   dise,
+  diMapOnce,
 } from './index.js'
 import EventEmitter from 'events'
 
@@ -449,6 +450,35 @@ test('diMap raw', () => {
   const n = dic<number>()
   const s = diMap(n => `string - ${n + 1}`, n)
   assert.strictEqual(s.raw(1), 'string - 2')
+})
+
+test('diMapOnce only once', () => {
+  let i = 0
+  const n = dic<number>()
+  const s = diMapOnce(n => ((i = i + 1), `string - ${n + 1}`), n)
+  diInit(() => {
+    n(1)
+    s()
+    s()
+    assert.strictEqual(i, 1)
+  })
+})
+
+test('diMapOnce response', () => {
+  const n = dic<number>()
+  const s = diMapOnce(n => `string - ${n + 1}`, n)
+  diInit(() => {
+    n(1)
+    assert.strictEqual(s(), 'string - 2')
+  })
+})
+
+test('diMapOnce raw', () => {
+  const n = dic<number>()
+  const s = diMapOnce(n => `string - ${n + 1}`, n)
+  diInit(() => {
+    assert.strictEqual(s.raw(1), 'string - 2')
+  })
 })
 
 test('dise', async () => {
