@@ -142,26 +142,34 @@ scope.inc() // 5
 
 ```typescript
 const cacheNumber = dic<number>()
-const cacheString = diMap(n => `string - ${n}`, cacheNumber)
+const calcString = diMap(n => `string - ${n}`, cacheNumber)
 
 cacheNumber(5)
-cacheString() // "string - 5"
+calcString() // "string - 5"
 
 const onceNumber = diOnce((n: number) => {
   return n;
 });
-const onceString = diMap(n => `string - ${n}`, onceNumber)
+const calcString = diMap(n => `string - ${n}`, onceNumber)
 
 onceNumber(5)
-onceString() // "string - 5"
+calcString() // "string - 5"
 
 const inc = dis((sum, n: number) => sum + n, 0);
-const incString = diMap(s => `string - ${s}`, inc)
+const calcString = diMap(s => `string - ${s}`, inc)
 inc(1);
 inc(4);
-incString() // "string - 5"
+calcString() // "string - 5"
 
-incString.raw(1) // direct call of function, useful for unit tests
+calcString.raw(1) // direct call of function, useful for unit tests
+
+const cacheNumber = dic<number>()
+let i = 0
+const onceString = diMapOnce(n => ((i = i + 1), `string - ${n}`), cacheNumber)
+
+cacheNumber(5)
+onceString() // "string - 5"
+onceString() // i = 1, because onceString is singleton for DI scope
 ```
 
 #### Attach async effect to State
