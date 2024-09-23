@@ -5,15 +5,14 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node: ['22']
-    name: Node ${{ matrix.node }} tests
     steps:
-      - uses: actions/checkout@v1
-      - name: Tests
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+      - uses: actions/setup-node@v4
+      - run: deno test --unstable-sloppy-imports
       - run: npm ci
       - run: npm run test

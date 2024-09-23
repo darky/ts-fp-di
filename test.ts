@@ -1,5 +1,5 @@
-import { AsyncLocalStorage } from 'async_hooks'
-import assert from 'assert'
+import { AsyncLocalStorage } from 'node:async_hooks'
+import assert from 'node:assert'
 import test from 'node:test'
 import { createSandbox } from 'sinon'
 
@@ -22,7 +22,9 @@ import {
   dise,
   diMapOnce,
 } from './index.js'
-import EventEmitter from 'events'
+import EventEmitter from 'node:events'
+import { setImmediate } from 'node:timers'
+import process from 'node:process'
 
 test('diDep error before init', async () => {
   const depFn = () => 1
