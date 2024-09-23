@@ -1,5 +1,5 @@
 # ts-fp-di
-Tiny TypeScript functional dependency injection, based on Node.js AsyncLocalStorage.
+Tiny TypeScript functional dependency injection, based on AsyncLocalStorage. Supports Node.js, Deno
 
 ## Get started
 Firstly, need init DI container for each life cycle of your backend application (each HTTP request/response, handle MQ message, ...).
