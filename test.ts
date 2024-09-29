@@ -407,6 +407,16 @@ test('dic', () => {
   })
 })
 
+test('dic not cached until set', () => {
+  const n = dic<number>()
+  const s = diMap(n => (n ? `string - ${n + 1}` : 'empty'), n)
+  diInit(() => {
+    assert.strictEqual(s(), 'empty')
+    n(1)
+    assert.strictEqual(s(), 'string - 2')
+  })
+})
+
 test('dic diMap', () => {
   const n = dic<number>()
   const s = diMap(n => `string - ${n + 1}`, n)
@@ -480,6 +490,16 @@ test('diMapOnce raw', () => {
   const s = diMapOnce(n => `string - ${n + 1}`, n)
   diInit(() => {
     assert.strictEqual(s.raw(1), 'string - 2')
+  })
+})
+
+test('diMapOnce not cached until returns non nullable', () => {
+  const n = dic<number>()
+  const s = diMapOnce(n => (n ? `string - ${n + 1}` : null), n)
+  diInit(() => {
+    assert.strictEqual(s(), null)
+    n(1)
+    assert.strictEqual(s(), 'string - 2')
   })
 })
 
