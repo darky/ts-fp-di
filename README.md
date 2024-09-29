@@ -53,6 +53,10 @@ diDep<User>('user') // Extract current user from anywhere
 const inc = dis((sum, n: number) => sum + n, 0); 
 inc(1); // mutate state
 inc(); // 1, "inc" without argument returns current state
+
+const num = div<number>(); // alias to dis((sum, n: number) => n, void 0)
+num(5); // mutate state
+num(); // 5
 ```
 
 #### State managment in global scope
