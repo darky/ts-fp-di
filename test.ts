@@ -516,6 +516,18 @@ test('dise', async () => {
   })
 })
 
+test('dise output as input', async () => {
+  await diInit(async () => {
+    const n = dic<number>()
+    n(1)
+    const output = div<number | null>()
+    const se = dise(async (n, out) => (out ? out + 1 : n + 1), output, n, output)
+    assert.strictEqual(await se(), 2)
+    assert.strictEqual(await se(), 3)
+    assert.strictEqual(await se(), 4)
+  })
+})
+
 test('div', () => {
   const n = div<number>()
   diInit(() => {
