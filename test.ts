@@ -21,6 +21,7 @@ import {
   diMap,
   dise,
   diMapOnce,
+  div,
 } from './index.js'
 import EventEmitter from 'node:events'
 import { setImmediate } from 'node:timers'
@@ -512,5 +513,16 @@ test('dise', async () => {
     const se = dise(async (n, s) => `${n} ${s}`, output, n, s)
     const resp = await se()
     assert.strictEqual(resp, '1 string - 2')
+  })
+})
+
+test('div', () => {
+  const n = div<number>()
+  diInit(() => {
+    assert.strictEqual(n(), void 0)
+    assert.strictEqual(n(5), 5)
+    assert.strictEqual(n(), 5)
+    assert.strictEqual(n(10), 10)
+    assert.strictEqual(n(), 10)
   })
 })

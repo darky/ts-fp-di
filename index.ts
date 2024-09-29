@@ -43,6 +43,11 @@ export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGl
   return stateFn
 }
 
+export const div = <T>() => {
+  const dio: (x?: T) => T = dis((_, x: T) => x as T, void 0 as T)
+  return dio
+}
+
 export const diDep = <T>(dep: T | string): T => {
   const store = storeOrError()
   const userDep = (store.deps as Map<T | string, T>).get(dep)
