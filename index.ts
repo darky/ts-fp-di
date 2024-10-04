@@ -14,6 +14,16 @@ const globalState = new Map<unknown, unknown>()
 
 export const clearGlobalState = () => globalState.clear()
 
+/**
+ * Make function **Dependency Injection** friendly <br/>
+ * Reponded function should be called within {@link diInit} callback
+ *
+ * @example
+ * const fun = di(x => x + 1)
+ * fun(1) // 2
+ * diSet(fun, x => x + 2)
+ * fun(1) // 3
+ */
 export const di = <T extends Function>(fn: T): T => {
   const overrideFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError()
