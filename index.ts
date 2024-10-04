@@ -218,25 +218,28 @@ export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unkn
 export const diMapOnce: typeof diMap = (raw: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) =>
   Object.assign(diOnce(diMap(raw, ...(fns as [() => unknown]))), { raw })
 
-export function dise<R>(effect: () => Promise<R>, dicOutput: (x: R) => R): () => Promise<R>
+export function dise<R>(
+  effect: () => Promise<R>,
+  dicOutput: (x: R) => R
+): (() => Promise<R>) & { raw: () => Promise<R> }
 export function dise<R, T1>(
   effect: (x1: T1) => Promise<R>,
   dicOutput: (x: R) => R,
   dicInput1: () => T1
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1) => Promise<R> }
 export function dise<R, I, T1, T2>(
   effect: (x1: T1, x2: T2) => Promise<R>,
   dicOutput: (x: R) => R,
   dicInput1: () => T1,
   dicInput2: () => T2
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2) => Promise<R> }
 export function dise<R, T1, T2, T3>(
   effect: (x1: T1, x2: T2, x3: T3) => Promise<R>,
   dicOutput: (x: R) => R,
   dicInput1: () => T1,
   dicInput2: () => T2,
   dicInput3: () => T3
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3) => Promise<R> }
 export function dise<R, T1, T2, T3, T4>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -244,7 +247,7 @@ export function dise<R, T1, T2, T3, T4>(
   dicInput2: () => T2,
   dicInput3: () => T3,
   dicInput4: () => T4
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -253,7 +256,7 @@ export function dise<R, T1, T2, T3, T4, T5>(
   dicInput3: () => T3,
   dicInput4: () => T4,
   dicInput5: () => T5
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5, T6>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -263,7 +266,7 @@ export function dise<R, T1, T2, T3, T4, T5, T6>(
   dicInput4: () => T4,
   dicInput5: () => T5,
   dicInput6: () => T6
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5, T6, T7>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -274,7 +277,7 @@ export function dise<R, T1, T2, T3, T4, T5, T6, T7>(
   dicInput5: () => T5,
   dicInput6: () => T6,
   dicInput7: () => T7
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -286,7 +289,7 @@ export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8>(
   dicInput6: () => T6,
   dicInput7: () => T7,
   dicInput8: () => T8
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8, T9>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8, x9: T9) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -299,7 +302,7 @@ export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8, T9>(
   dicInput7: () => T7,
   dicInput8: () => T8,
   dicInput9: () => T9
-): () => Promise<R>
+): (() => Promise<R>) & { raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8, x9: T9) => Promise<R> }
 export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   effect: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8, x9: T9, x10: T10) => Promise<R>,
   dicOutput: (x: R) => R,
@@ -313,14 +316,20 @@ export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
   dicInput8: () => T8,
   dicInput9: () => T9,
   dicInput10: () => T10
-): () => Promise<R>
+): (() => Promise<R>) & {
+  raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8, x9: T9, x10: T10) => Promise<R>
+}
 export function dise(
   effect: (...args: unknown[]) => Promise<unknown>,
   dicOutput: (x: unknown) => unknown,
   ...dicInputs: (() => unknown)[]
 ) {
-  return () => effect(...dicInputs.map(dic => dic())).then(r => dicOutput(r))
+  const raw = di(effect)
+  return Object.assign(() => raw(...dicInputs.map(dic => dic())).then(r => dicOutput(r)), { raw })
 }
+
+export const diseSet = <T>(fun: { raw: T }, replacement: T) =>
+  diSet(fun.raw, replacement as T extends string ? unknown : T)
 
 const storeOrError = () => {
   const store = als.getStore()

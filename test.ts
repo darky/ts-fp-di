@@ -22,6 +22,7 @@ import {
   dise,
   diMapOnce,
   div,
+  diseSet,
 } from './index.js'
 import EventEmitter from 'node:events'
 import { setImmediate } from 'node:timers'
@@ -525,6 +526,19 @@ test('dise output as input', async () => {
     assert.strictEqual(await se(), 2)
     assert.strictEqual(await se(), 3)
     assert.strictEqual(await se(), 4)
+  })
+})
+
+test('diseSet', async () => {
+  await diInit(async () => {
+    const n = dic<number>()
+    n(1)
+    const s = diMap(n => `string - ${n + 1}`, n)
+    const output = dic<string>()
+    const se = dise(async (n, s) => `${n} ${s}`, output, n, s)
+    diseSet(se, async (n, s) => `${s}; ${n} - mocked`)
+    const resp = await se()
+    assert.strictEqual(resp, 'string - 2; 1 - mocked')
   })
 })
 
