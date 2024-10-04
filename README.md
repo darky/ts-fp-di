@@ -180,17 +180,25 @@ onceString() // i = 1, because onceString is singleton for DI scope
 
 ```typescript
 const numberState = dic<number>()
+numberState(5)
 const stringState = diMap(n => `string - ${n}`, numberState)
-const seState = dic<string>() // will be populated via side effect
+const seState = div<string>() // will be populated via side effect
 const se = dise(
   async (n, s) => `${n} ${s}`, // side effect async function
   seState, // this state will be populated via async response
-  n, // optional arg1 for effect function
-  s) // optional arg2 for effect function
+  numberState, // optional arg1 for effect function
+  stringState) // optional arg2 for effect function
 
 await se()
 
 seState() // "5 string - 5"
+
+// dise function can be overriden for unit tests
+diseSet(se, async (n, s) => n + parseInt(s.match(/\d/)))
+
+await se()
+
+seState() // 10
 ```
 
 ## Plugins
