@@ -1,6 +1,6 @@
 {
   "name": "ts-fp-di",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Tiny TypeScript functional dependency injection, based on AsyncLocalStorage. Supports Node.js, Deno",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
