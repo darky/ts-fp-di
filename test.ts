@@ -23,6 +23,7 @@ import {
   diMapOnce,
   div,
   diseSet,
+  DiNotRegisteredError,
 } from './index.js'
 import EventEmitter from 'node:events'
 import { setImmediate } from 'node:timers'
@@ -33,19 +34,19 @@ test('diDep error before init', async () => {
 
   const fn = (dep = diDep(depFn)) => dep()
 
-  await assert.rejects(async () => fn())
+  await assert.rejects(async () => fn(), DiNotRegisteredError)
 })
 
 test('diSet error before init', async () => {
   const depFn = () => 1
 
-  await assert.rejects(async () => diSet(depFn, () => 2))
+  await assert.rejects(async () => diSet(depFn, () => 2), DiNotRegisteredError)
 })
 
 test('dis error before init', async () => {
   const inc = dis((sum, n: number) => sum + n, 0)
 
-  await assert.rejects(async () => inc())
+  await assert.rejects(async () => inc(), DiNotRegisteredError)
 })
 
 test('di with default fn', () => {
@@ -163,7 +164,7 @@ test('clearGlobalState', () => {
 test('diOnce error before init', async () => {
   const fn = diOnce(() => 1)
 
-  await assert.rejects(async () => fn())
+  await assert.rejects(async () => fn(), DiNotRegisteredError)
 })
 
 test('diOnce', () => {

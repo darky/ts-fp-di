@@ -14,15 +14,23 @@ const globalState = new Map<unknown, unknown>()
 
 export const clearGlobalState = () => globalState.clear()
 
+export class DiNotRegisteredError extends Error {
+  constructor() {
+    super('DI container not registered! Consider, that you call "diInit" before')
+  }
+}
+
 /**
- * Make function **Dependency Injection** friendly <br/>
- * Reponded function should be called within {@link diInit} callback
+ * Make function **Dependency Injection** friendly
+ *
+ * Responded function should be called within {@link diInit} callback
  *
  * @example
  * const fun = di(x => x + 1)
  * fun(1) // 2
  * diSet(fun, x => x + 2)
  * fun(1) // 3
+ *
  */
 export const di = <T extends Function>(fn: T): T => {
   const overrideFn = function (this: unknown, ...args: unknown[]) {
@@ -69,7 +77,40 @@ export const diDep = <T>(dep: T | string): T => {
   return userDep ?? (dep as T)
 }
 
-export const diSet = <T>(dep: T, value: T extends string ? unknown : T) => {
+/**
+ * Override **Dependency Injection** friendly function with another one
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * const fun = di(x => x + 1)
+ * fun(1) // 2
+ * diSet(fun, x => x + 2)
+ * fun(1) // 3
+ *
+ * @throws {@link DiNotRegisteredError} if called outside of {@link diInit} callback
+ */
+export function diSet<T extends Function>(dep: T, value: T): void
+/**
+ * Register any value inside **Dependency Injection** container by unique string literal
+ *
+ * Can be extracted later using {@link diDep}
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * type User = {
+ *   login: string;
+ *   roles: string[];
+ * }
+ * const user: User = {login: 'root', roles: ['admin']}
+ * diSet('user', user)
+ * diDep<User>('user') // {login: 'root', roles: ['admin']}
+ *
+ * @throws {@link DiNotRegisteredError} if called outside of {@link diInit} callback
+ */
+export function diSet(dep: string, value: unknown): void
+export function diSet<T extends Function>(dep: T | string, value: T | unknown) {
   const store = storeOrError()
   store.deps.set(dep, value)
 }
@@ -110,6 +151,13 @@ export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
   store.once.set(fn, value)
 }
 
+/**
+ * Check runtime within {@link diInit} callback
+ *
+ * @example
+ * diExists() // false
+ * diInit(() => diExists()) // true
+ */
 export const diExists = () => (als.getStore() == null) === false
 
 export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map(), derived: new Map() })
@@ -338,14 +386,13 @@ export function dise(
   return Object.assign(() => raw(...dicInputs.map(dic => dic())).then(r => dicOutput(r)), { raw })
 }
 
-export const diseSet = <T>(fun: { raw: T }, replacement: T) =>
-  diSet(fun.raw, replacement as T extends string ? unknown : T)
+export const diseSet = <T extends Function>(fun: { raw: T }, replacement: T) => diSet(fun.raw, replacement)
 
 const storeOrError = () => {
   const store = als.getStore()
 
   if (store == null) {
-    throw new Error('DI container not registered! Consider, that you call "diInit" before')
+    throw new DiNotRegisteredError()
   }
 
   return store
