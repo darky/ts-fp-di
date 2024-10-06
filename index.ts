@@ -14,9 +14,15 @@ const globalState = new Map<unknown, unknown>()
 
 export const clearGlobalState = () => globalState.clear()
 
-export class DiNotRegisteredError extends Error {
+export class DiNotInitializedError extends Error {
   constructor() {
-    super('DI container not registered! Consider, that you call "diInit" before')
+    super('DI container not initialized! Consider, that you call "diInit" before')
+  }
+}
+
+export class DependencyNotRegisteredError extends Error {
+  constructor(dep: string) {
+    super(`Dependency with key "${dep}" not registered!`)
   }
 }
 
@@ -66,15 +72,46 @@ export const div = <T>() => {
   return dio
 }
 
-export const diDep = <T>(dep: T | string): T => {
+/**
+ * Extract value from **Dependency Injection** by unique string literal
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * type User = {
+ *   login: string;
+ *   roles: string[];
+ * }
+ * const user: User = {login: 'root', roles: ['admin']}
+ * diSet('user', user)
+ * diDep<User>('user') // {login: 'root', roles: ['admin']}
+ *
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
+ * @throws {@link DependencyNotRegisteredError} if dependency not registered
+ */
+export function diDep<T>(dep: string): T
+/**
+ * Extract overriden function from **Dependency Injection**
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * const fun = () => 1
+ * diSet(fun, () => 2)
+ * diDep(fun)() // 2
+ *
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
+ */
+export function diDep<T extends Function>(dep: T): T
+export function diDep(dep: unknown) {
   const store = storeOrError()
-  const userDep = (store.deps as Map<T | string, T>).get(dep)
+  const userDep = store.deps.get(dep)
 
   if (typeof dep === 'string' && userDep == null) {
-    throw new Error(`Dependency with key ${dep} not registered!`)
+    throw new DependencyNotRegisteredError(dep)
   }
 
-  return userDep ?? (dep as T)
+  return userDep ?? dep
 }
 
 /**
@@ -88,7 +125,7 @@ export const diDep = <T>(dep: T | string): T => {
  * diSet(fun, x => x + 2)
  * fun(1) // 3
  *
- * @throws {@link DiNotRegisteredError} if called outside of {@link diInit} callback
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
  */
 export function diSet<T extends Function>(dep: T, value: T): void
 /**
@@ -107,7 +144,7 @@ export function diSet<T extends Function>(dep: T, value: T): void
  * diSet('user', user)
  * diDep<User>('user') // {login: 'root', roles: ['admin']}
  *
- * @throws {@link DiNotRegisteredError} if called outside of {@link diInit} callback
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
  */
 export function diSet(dep: string, value: unknown): void
 export function diSet<T extends Function>(dep: T | string, value: T | unknown) {
@@ -115,9 +152,35 @@ export function diSet<T extends Function>(dep: T | string, value: T | unknown) {
   store.deps.set(dep, value)
 }
 
-export const diHas = <T>(dep: T | string): boolean => {
+/**
+ * Check that **Dependency Injection** friendly function was overriden
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * const fun = di(x => x + 1)
+ * diSet(fun, x => x + 2)
+ * diHas(fun) // true
+ *
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
+ */
+export function diHas<T extends Function>(dep: T): boolean
+/**
+ * Check that dependency was registered by string literal in **Dependency Injection** container
+ *
+ * Should be called within {@link diInit} callback
+ *
+ * @example
+ * const user: User = {login: 'root', roles: ['admin']}
+ * diSet('user', user)
+ * diHas('user') // true
+ *
+ * @throws {@link DiNotInitializedError} if called outside of {@link diInit} callback
+ */
+export function diHas(dep: string): boolean
+export function diHas(dep: unknown): boolean {
   const store = storeOrError()
-  return (store.deps as Map<T | string, T>).has(dep)
+  return store.deps.has(dep)
 }
 
 export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
@@ -392,7 +455,7 @@ const storeOrError = () => {
   const store = als.getStore()
 
   if (store == null) {
-    throw new DiNotRegisteredError()
+    throw new DiNotInitializedError()
   }
 
   return store

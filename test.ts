@@ -23,7 +23,7 @@ import {
   diMapOnce,
   div,
   diseSet,
-  DiNotRegisteredError,
+  DiNotInitializedError,
 } from './index.js'
 import EventEmitter from 'node:events'
 import { setImmediate } from 'node:timers'
@@ -34,19 +34,19 @@ test('diDep error before init', async () => {
 
   const fn = (dep = diDep(depFn)) => dep()
 
-  await assert.rejects(async () => fn(), DiNotRegisteredError)
+  await assert.rejects(async () => fn(), DiNotInitializedError)
 })
 
 test('diSet error before init', async () => {
   const depFn = () => 1
 
-  await assert.rejects(async () => diSet(depFn, () => 2), DiNotRegisteredError)
+  await assert.rejects(async () => diSet(depFn, () => 2), DiNotInitializedError)
 })
 
 test('dis error before init', async () => {
   const inc = dis((sum, n: number) => sum + n, 0)
 
-  await assert.rejects(async () => inc(), DiNotRegisteredError)
+  await assert.rejects(async () => inc(), DiNotInitializedError)
 })
 
 test('di with default fn', () => {
@@ -164,7 +164,7 @@ test('clearGlobalState', () => {
 test('diOnce error before init', async () => {
   const fn = diOnce(() => 1)
 
-  await assert.rejects(async () => fn(), DiNotRegisteredError)
+  await assert.rejects(async () => fn(), DiNotInitializedError)
 })
 
 test('diOnce', () => {
@@ -301,11 +301,29 @@ test('diHas true', () => {
   })
 })
 
+test('diHas true for fn dep', () => {
+  diInit(() => {
+    const fn = di(() => 1 as number)
+
+    diSet(fn, () => 2)
+
+    assert.equal(diHas(fn), true)
+  })
+})
+
 test('diHas false', () => {
   diInit(() => {
     const fn = (dep = diHas('test')) => dep
 
     assert.equal(fn(), false)
+  })
+})
+
+test('diHas false for fn dep', () => {
+  diInit(() => {
+    const fn = di(() => 1 as number)
+
+    assert.equal(diHas(fn), false)
   })
 })
 
@@ -391,9 +409,9 @@ test('diScope', () => {
   const scope2 = diScope({ inc, checkScope }, () => diSet('scope2', true))
 
   assert.strictEqual(scope1.checkScope('scope1'), true)
-  assert.rejects(async () => scope1.checkScope('scope2'), new Error('Dependency with key scope2 not registered!'))
+  assert.rejects(async () => scope1.checkScope('scope2'), new Error('Dependency with key "scope2" not registered!'))
   assert.strictEqual(scope2.checkScope('scope2'), true)
-  assert.rejects(async () => scope2.checkScope('scope1'), new Error('Dependency with key scope1 not registered!'))
+  assert.rejects(async () => scope2.checkScope('scope1'), new Error('Dependency with key "scope1" not registered!'))
 
   scope1.inc(2)
   scope2.inc(5)
