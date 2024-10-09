@@ -183,6 +183,18 @@ export function diHas(dep: unknown): boolean {
   return store.deps.has(dep)
 }
 
+/**
+ * Entry point for almost all **ts-fp-di** API
+ *
+ * Should be called on each HTTP request, MQ message handling, cron job or just in test
+ *
+ * @example
+ * diInit(() => {
+ *   // ts-fp-di API usage here
+ *   // or call `next` function of middleware here
+ * })
+ *
+ */
 export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
   return diExists()
     ? ctx
@@ -200,8 +212,17 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
     : als.run(ctx ?? diContext(), cb)
 }
 
-export const diOnce = <T extends (...args: any) => any>(fn: T) => {
-  const onceFn = function (this: unknown, ...args: Parameters<T>) {
+/**
+ * Make function, which calling result will be cached within {@link diInit} callback
+ *
+ * @example
+ * const fun = diOnce(n => n + 1)
+ * fun(1) // 2
+ * fun(8) // again 2, because it's cached
+ *
+ */
+export const diOnce = <T extends Function>(fn: T) => {
+  const onceFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError()
     return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn)
   } as unknown as T
@@ -209,7 +230,20 @@ export const diOnce = <T extends (...args: any) => any>(fn: T) => {
   return onceFn
 }
 
-export const diOnceSet = <T>(fn: (...args: any[]) => T, value: T) => {
+/**
+ *
+ * Override cached result of {@link diOnce} call
+ *
+ * Should be cached within {@link diInit} callback
+ *
+ * @example
+ * const fun = diOnce(n => n + 1)
+ * fun(1) // 2
+ * diOnceSet(fun, 9)
+ * fun(8) // 9
+ *
+ */
+export const diOnceSet = <T extends (...args: any[]) => any>(fn: T, value: ReturnType<T>) => {
   const store = storeOrError()
   store.once.set(fn, value)
 }
