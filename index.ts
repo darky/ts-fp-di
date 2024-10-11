@@ -67,6 +67,20 @@ export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGl
   return stateFn
 }
 
+/**
+ * Setter for caching value within {@link diInit} callback
+ *
+ * Call it with value for caching
+ *
+ * Call it without arguments for getting value from cache
+ *
+ * @example
+ * const num = dic<number>()
+ * num(5) // cache 5 inside `num` setter
+ * num() // 5
+ * num(10) // change cached value to 10
+ * num() // 10
+ */
 export const div = <T>() => {
   const dio: (x?: T) => T = dis((_, x: T) => x as T, void 0 as T)
   return dio
@@ -274,6 +288,20 @@ export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () =>
   ) as T
 }
 
+/**
+ * Setter for caching constant value within {@link diInit} callback
+ *
+ * Call it with constant value for caching
+ *
+ * Call it without arguments for getting constant value from cache
+ *
+ * @example
+ * const num = dic<number>()
+ * num(5) // cache 5 inside `num` setter
+ * num() // 5
+ * num(10) // no affect, because 5 already cached
+ * num() // 5
+ */
 export const dic = <T>() => {
   const dio: (x?: T | undefined) => T = diOnce((x?: T) => x as T)
   return dio
