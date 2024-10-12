@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 import assert from 'node:assert'
 import test from 'node:test'
 import { createSandbox } from 'sinon'
+import { setTimeout as setTimeoutP } from 'node:timers/promises'
 
 import {
   diInit,
@@ -418,6 +419,23 @@ test('diScope', () => {
 
   assert.strictEqual(scope1.inc(), 2)
   assert.strictEqual(scope2.inc(), 5)
+})
+
+test('diScope with setInterval', async () => {
+  const inc = dis((resp: number, n: number) => resp + n, 0)
+  const interval = dic<any>()
+  const resetInterval = () => {
+    clearInterval(interval())
+  }
+
+  const scope = diScope({ inc, resetInterval }, () => {
+    interval(setInterval(() => inc(1), 10))
+  })
+
+  await setTimeoutP(40)
+  scope.resetInterval()
+
+  assert.strictEqual(scope.inc() > 2, true)
 })
 
 test('dic', () => {
