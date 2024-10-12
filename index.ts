@@ -1,10 +1,10 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
 type AlsContext = {
-  deps: Map<unknown, unknown>
-  once: Map<unknown, unknown>
-  state: Map<unknown, unknown>
-  derived: Map<unknown, unknown>
+  readonly '@@deps': ReadonlyMap<unknown, unknown>
+  readonly '@@once': ReadonlyMap<unknown, unknown>
+  readonly '@@state': ReadonlyMap<unknown, unknown>
+  readonly '@@derived': ReadonlyMap<unknown, unknown>
   [k: string]: unknown
 }
 
@@ -37,7 +37,7 @@ export class DependencyNotRegisteredError extends Error {
 export const di = <T extends Function>(fn: T): T => {
   const overrideFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError()
-    const userDep = (store.deps as Map<T, T>).get(overrideFn)
+    const userDep = (store['@@deps'] as Map<T, T>).get(overrideFn)
 
     return (userDep ?? fn).apply(this, args)
   } as unknown as T
@@ -60,14 +60,14 @@ export const di = <T extends Function>(fn: T): T => {
 export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S) => {
   const stateFn = function (this: unknown, payload?: P) {
     const store = storeOrError()
-    const oldState = (store.state as Map<unknown, S>).get(stateFn)
+    const oldState = (store['@@state'] as Map<unknown, S>).get(stateFn)
 
     if (payload == null) {
       return oldState ?? defaultState
     }
 
     const newState = fn(oldState ?? defaultState, payload)
-    store.state.set(stateFn, newState)
+    ;(store['@@state'] as Map<unknown, unknown>).set(stateFn, newState)
 
     return newState
   }
@@ -126,7 +126,7 @@ export function diDep<T>(dep: string): T
 export function diDep<T extends Function>(dep: T): T
 export function diDep(dep: unknown) {
   const store = storeOrError()
-  const userDep = store.deps.get(dep)
+  const userDep = store['@@deps'].get(dep)
 
   if (typeof dep === 'string' && userDep == null) {
     throw new DependencyNotRegisteredError(dep)
@@ -170,7 +170,7 @@ export function diSet<T extends Function>(dep: T, value: T): void
 export function diSet(dep: string, value: unknown): void
 export function diSet<T extends Function>(dep: T | string, value: T | unknown) {
   const store = storeOrError()
-  store.deps.set(dep, value)
+  ;(store['@@deps'] as Map<unknown, unknown>).set(dep, value)
 }
 
 /**
@@ -201,7 +201,7 @@ export function diHas<T extends Function>(dep: T): boolean
 export function diHas(dep: string): boolean
 export function diHas(dep: unknown): boolean {
   const store = storeOrError()
-  return store.deps.has(dep)
+  return store['@@deps'].has(dep)
 }
 
 /**
@@ -222,10 +222,18 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
       ? als.run(
           {
             ...als.getStore(),
-            deps: new Map(Array.from(als.getStore()!.deps.entries()).concat(Array.from(ctx.deps.entries()))),
-            once: new Map(Array.from(als.getStore()!.once.entries()).concat(Array.from(ctx.once.entries()))),
-            state: new Map(Array.from(als.getStore()!.state.entries()).concat(Array.from(ctx.state.entries()))),
-            derived: new Map(Array.from(als.getStore()!.derived.entries()).concat(Array.from(ctx.derived.entries()))),
+            '@@deps': new Map(
+              Array.from(als.getStore()!['@@deps'].entries()).concat(Array.from(ctx['@@deps'].entries()))
+            ),
+            '@@once': new Map(
+              Array.from(als.getStore()!['@@once'].entries()).concat(Array.from(ctx['@@once'].entries()))
+            ),
+            '@@state': new Map(
+              Array.from(als.getStore()!['@@state'].entries()).concat(Array.from(ctx['@@state'].entries()))
+            ),
+            '@@derived': new Map(
+              Array.from(als.getStore()!['@@derived'].entries()).concat(Array.from(ctx['@@derived'].entries()))
+            ),
           },
           cb
         )
@@ -245,7 +253,10 @@ export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
 export const diOnce = <T extends Function>(fn: T) => {
   const onceFn = function (this: unknown, ...args: unknown[]) {
     const store = storeOrError()
-    return store.once.get(onceFn) ?? store.once.set(onceFn, fn.apply(this, args)).get(onceFn)
+    return (
+      store['@@once'].get(onceFn) ??
+      (store['@@once'] as Map<unknown, unknown>).set(onceFn, fn.apply(this, args)).get(onceFn)
+    )
   } as unknown as T
 
   return onceFn
@@ -266,7 +277,7 @@ export const diOnce = <T extends Function>(fn: T) => {
  */
 export const diOnceSet = <T extends (...args: any[]) => any>(fn: T, value: ReturnType<T>) => {
   const store = storeOrError()
-  store.once.set(fn, value)
+  ;(store['@@once'] as Map<unknown, unknown>).set(fn, value)
 }
 
 /**
@@ -278,7 +289,12 @@ export const diOnceSet = <T extends (...args: any[]) => any>(fn: T, value: Retur
  */
 export const diExists = () => (als.getStore() == null) === false
 
-export const diContext = (): AlsContext => ({ deps: new Map(), once: new Map(), state: new Map(), derived: new Map() })
+export const diContext = (): AlsContext => ({
+  '@@deps': new Map(),
+  '@@once': new Map(),
+  '@@state': new Map(),
+  '@@derived': new Map(),
+})
 
 export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () => void): T => {
   const ctx = diContext()
@@ -399,7 +415,7 @@ export function diMap<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(
 export function diMap(pred: (...args: unknown[]) => unknown, ...fns: (() => unknown)[]) {
   const diMapFn = () => {
     const r = pred(...fns.map(f => f()))
-    storeOrError().derived.set(diMapFn, r)
+    ;(storeOrError()['@@derived'] as Map<unknown, unknown>).set(diMapFn, r)
     return r
   }
   return Object.assign(diMapFn, { raw: pred })

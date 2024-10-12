@@ -189,8 +189,8 @@ test('diOnceSet', () => {
 test('expose als', () => {
   diInit(() => {
     const store = als.getStore()
-    assert.equal(store?.deps.toString(), '[object Map]')
-    assert.equal(store?.once.toString(), '[object Map]')
+    assert.equal(store?.['@@deps'].toString(), '[object Map]')
+    assert.equal(store?.['@@once'].toString(), '[object Map]')
   })
 })
 
@@ -223,10 +223,10 @@ test('diInit on existing als', async () => {
 
 test('diInit can receive context', async () => {
   const ctx = {
-    deps: new Map([['foo', 'bar']]),
-    state: new Map(),
-    once: new Map(),
-    derived: new Map(),
+    '@@deps': new Map([['foo', 'bar']]),
+    '@@state': new Map(),
+    '@@once': new Map(),
+    '@@derived': new Map(),
   }
   await diInit(async () => {
     assert.equal(diDep('foo'), 'bar')
@@ -235,10 +235,10 @@ test('diInit can receive context', async () => {
 
 test('diInit can receive context event if parent context exists', async () => {
   const ctx = {
-    deps: new Map([['foo', 'bar']]),
-    state: new Map(),
-    once: new Map(),
-    derived: new Map(),
+    '@@deps': new Map([['foo', 'bar']]),
+    '@@state': new Map(),
+    '@@once': new Map(),
+    '@@derived': new Map(),
   }
   await diInit(async () => {
     diSet('test', true)
@@ -250,10 +250,10 @@ test('diInit can receive context event if parent context exists', async () => {
 
 test("if diInit receive context, don't miss parent context", async () => {
   const ctx = {
-    deps: new Map([['foo', 'bar']]),
-    state: new Map(),
-    once: new Map(),
-    derived: new Map(),
+    '@@deps': new Map([['foo', 'bar']]),
+    '@@state': new Map(),
+    '@@once': new Map(),
+    '@@derived': new Map(),
   }
   await diInit(async () => {
     diSet('test', true)
@@ -376,10 +376,10 @@ test('ensured di works inside process.nextTick', async () => {
 
 test('diContext', () => {
   assert.deepEqual(diContext(), {
-    deps: new Map(),
-    once: new Map(),
-    state: new Map(),
-    derived: new Map(),
+    '@@deps': new Map(),
+    '@@once': new Map(),
+    '@@state': new Map(),
+    '@@derived': new Map(),
   })
 })
 
@@ -474,7 +474,7 @@ test('diMap should mutate derived', () => {
   diInit(() => {
     n(1)
     s()
-    assert.deepStrictEqual(Array.from(als.getStore()?.derived.values() ?? []), ['string - 2'])
+    assert.deepStrictEqual(Array.from(als.getStore()?.['@@derived'].values() ?? []), ['string - 2'])
   })
 })
 
