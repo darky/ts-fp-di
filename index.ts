@@ -1,10 +1,28 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 
-type AlsContext = {
+/**
+ * Context which exists within {@link diInit} callback
+ */
+export type AlsContext = {
+  /**
+   * Contains overriden {@link di} functions here
+   */
   readonly '@@deps': ReadonlyMap<unknown, unknown>
+  /**
+   * Contains cached returns of {@link diOnce}, {@link diMapOnce}, {@link dic} here
+   */
   readonly '@@once': ReadonlyMap<unknown, unknown>
+  /**
+   * Contains states of {@link dis}, {@link div} here
+   */
   readonly '@@state': ReadonlyMap<unknown, unknown>
+  /**
+   * Contains derived states of {@link diMap} here
+   */
   readonly '@@derived': ReadonlyMap<unknown, unknown>
+  /**
+   * AlsContext can be extended by any property via third-party plugins
+   */
   [k: string]: unknown
 }
 
@@ -289,6 +307,9 @@ export const diOnceSet = <T extends (...args: any[]) => any>(fn: T, value: Retur
  */
 export const diExists = () => (als.getStore() == null) === false
 
+/**
+ * Make empty context for futher passing to {@link diInit}
+ */
 export const diContext = (): AlsContext => ({
   '@@deps': new Map(),
   '@@once': new Map(),
