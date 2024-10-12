@@ -576,6 +576,27 @@ export function dise<R, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>(
 ): (() => Promise<R>) & {
   raw: (x1: T1, x2: T2, x3: T3, x4: T4, x5: T5, x6: T6, x7: T7, x8: T8, x9: T9, x10: T10) => Promise<R>
 }
+/**
+ * Attach side effect function to state within {@link diInit} callback
+ *
+ * Effect can be Promise returned function
+ *
+ * Value of resolved Promise will be passed to state function
+ *
+ * Also variadic amount of state functions can passed as inputs Effect
+ *
+ * @example
+ * const userId = dic<number>()
+ * const user = dic<{age: number; id: number; name: string;}>()
+ * const fetchUser = dise(
+ *   id => db.query('select * from users where id = $1', [id]),
+ *   user,
+ *   userId)
+ *
+ * userId(1)
+ * await fetchUser()
+ * user() // {age: 50, id: 1, name: 'Bob'}
+ */
 export function dise(
   effect: (...args: unknown[]) => Promise<unknown>,
   dicOutput: (x: unknown) => unknown,
@@ -585,6 +606,22 @@ export function dise(
   return Object.assign(() => raw(...dicInputs.map(dic => dic())).then(r => dicOutput(r)), { raw })
 }
 
+/**
+ * Override side effect {@link dise} function within {@link diInit} callback
+ *
+ * @example
+ * const userId = dic<number>()
+ * const user = dic<{age: number; id: number; name: string;}>()
+ * const fetchUser = dise(
+ *   id => db.query('select * from users where id = $1', [id]),
+ *   user,
+ *   userId)
+ * diseSet(fetchUser, id => id === 1 ? {age: 30, id: 1, name: 'Alice'} : null)
+ *
+ * userId(1)
+ * await fetchUser()
+ * user() // {age: 30, id: 1, name: 'Alice'}
+ */
 export const diseSet = <T extends Function>(fun: { raw: T }, replacement: T) => diSet(fun.raw, replacement)
 
 const storeOrError = () => {
