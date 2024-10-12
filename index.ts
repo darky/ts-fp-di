@@ -48,6 +48,19 @@ export const di = <T extends Function>(fn: T): T => {
   return overrideFn
 }
 
+/**
+ * Redux like state reducer within {@link diInit} callback
+ *
+ * Call it with value for state reducing
+ *
+ * Call it without arguments for getting state
+ *
+ * @example
+ * const sum = dis((sum, n) => sum + n, 0)
+ * sum(5)
+ * sum(5)
+ * sum() // 10
+ */
 export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGlobal = false) => {
   const stateFn = function (this: unknown, payload?: P) {
     let store: ReturnType<typeof als.getStore>
