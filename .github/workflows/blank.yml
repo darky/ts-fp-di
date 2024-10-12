@@ -13,5 +13,6 @@ jobs:
         with:
           deno-version: v2.x
       - uses: actions/setup-node@v4
+      - run: deno install
       - run: deno test --unstable-sloppy-imports
       - run: npm run test
