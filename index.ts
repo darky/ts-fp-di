@@ -10,10 +10,6 @@ type AlsContext = {
 
 export const als = new AsyncLocalStorage<AlsContext>()
 
-const globalState = new Map<unknown, unknown>()
-
-export const clearGlobalState = () => globalState.clear()
-
 export class DiNotInitializedError extends Error {
   constructor() {
     super('DI container not initialized! Consider, that you call "diInit" before')
@@ -61,19 +57,17 @@ export const di = <T extends Function>(fn: T): T => {
  * sum(5)
  * sum() // 10
  */
-export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S, isGlobal = false) => {
+export const dis = <P, S>(fn: (state: S, payload: P) => S, defaultState: S) => {
   const stateFn = function (this: unknown, payload?: P) {
-    let store: ReturnType<typeof als.getStore>
-    const stateMap = isGlobal ? globalState : ((store = storeOrError()), store.state as Map<unknown, S>)
-
-    const oldState = (stateMap as Map<unknown, S>).get(stateFn)
+    const store = storeOrError()
+    const oldState = (store.state as Map<unknown, S>).get(stateFn)
 
     if (payload == null) {
       return oldState ?? defaultState
     }
 
     const newState = fn(oldState ?? defaultState, payload)
-    stateMap.set(stateFn, newState)
+    store.state.set(stateFn, newState)
 
     return newState
   }

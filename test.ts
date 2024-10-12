@@ -14,7 +14,6 @@ import {
   als,
   di,
   dis,
-  clearGlobalState,
   diHas,
   diContext,
   diScope,
@@ -132,14 +131,6 @@ test('dis simple', () => {
   })
 })
 
-test('dis global', () => {
-  const inc = dis((sum, n: number) => sum + n, 0, true)
-
-  inc(1)
-
-  assert.equal(inc(1) + 1, 3)
-})
-
 test('dis diMap', () => {
   diInit(() => {
     const inc = dis((sum, n: number) => sum + n, 0)
@@ -150,16 +141,6 @@ test('dis diMap', () => {
     assert.equal(inc(1) + 1, 3)
     assert.strictEqual(s().substring(0, 999), 'string - 3')
   })
-})
-
-test('clearGlobalState', () => {
-  const inc = dis((sum, n: number) => sum + n, 0, true)
-
-  inc(1)
-
-  clearGlobalState()
-
-  assert.equal(inc(), 0)
 })
 
 test('diOnce error before init', async () => {
