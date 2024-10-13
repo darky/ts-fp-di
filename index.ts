@@ -317,7 +317,23 @@ export const diContext = (): AlsContext => ({
   '@@derived': new Map(),
 })
 
-export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () => void): T => {
+/**
+ * Incapsulate state managment inside particular scope
+ *
+ * @example
+ * const sum = dis((sum, n) => sum + n, 0)
+ * const scope1 = diScope({sum})
+ * const scope2 = diScope({sum})
+ *
+ * scope1.sum(1)
+ * scope1.sum(4)
+ * scope1.sum() // 5
+ *
+ * scope2.sum(3)
+ * scope2.sum(7)
+ * scope2.sum() // 10
+ */
+export const diScope = <T extends { [key: string]: Function }>(scope: T, init?: () => void): T => {
   const ctx = diContext()
   if (init) {
     diInit(init, ctx)
@@ -327,7 +343,7 @@ export const diScope = <T extends { [key: string]: any }>(scope: T, init?: () =>
       key,
       function (this: unknown, ...args: unknown[]) {
         return diInit(() => fn.apply(this, args), ctx)
-      },
+      } as Function,
     ])
   ) as T
 }
