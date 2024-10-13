@@ -26,6 +26,11 @@ export type AlsContext = {
   [k: string]: unknown
 }
 
+/**
+ * **AsyncLocalStorage** instance used by this library
+ *
+ * Can be used by third-party plugins for inspecting or extending
+ */
 export const als = new AsyncLocalStorage<AlsContext>()
 
 export class DiNotInitializedError extends Error {
