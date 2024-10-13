@@ -33,12 +33,18 @@ export type AlsContext = {
  */
 export const als = new AsyncLocalStorage<AlsContext>()
 
+/**
+ * Error will be thrown if API of this library will be used outside of {@link diInit}
+ */
 export class DiNotInitializedError extends Error {
   constructor() {
     super('DI container not initialized! Consider, that you call "diInit" before')
   }
 }
 
+/**
+ * Error will be thrown for unexisting string dependency via {@link diDep}
+ */
 export class DependencyNotRegisteredError extends Error {
   constructor(dep: string) {
     super(`Dependency with key "${dep}" not registered!`)
