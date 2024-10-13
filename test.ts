@@ -421,6 +421,15 @@ test('diScope with diInit', async () => {
   })
 })
 
+test('diScope with diSet', async () => {
+  const number = di(() => 1 as number)
+  const changeNumberImpl = () => diSet(number, () => 2)
+  const scope = diScope({ changeNumberImpl, number })
+
+  scope.changeNumberImpl()
+  assert.strictEqual(scope.number(), 2)
+})
+
 test('diScope methods works without bind', async () => {
   const num = dic<number>()
   const scope = diScope({ num })
