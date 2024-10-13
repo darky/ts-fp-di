@@ -234,7 +234,13 @@ export function diHas(dep: unknown): boolean {
  * })
  *
  */
-export const diInit = <T>(cb: () => T, ctx?: AlsContext) => {
+export const diInit = <T>(
+  cb: () => T,
+  /**
+   * @internal
+   */
+  ctx?: AlsContext
+) => {
   return diExists()
     ? ctx
       ? als.run(
@@ -306,16 +312,6 @@ export const diOnceSet = <T extends (...args: any[]) => any>(fn: T, value: Retur
  * diInit(() => diExists()) // true
  */
 export const diExists = () => (als.getStore() == null) === false
-
-/**
- * Make empty context for futher passing to {@link diInit}
- */
-export const diContext = (): AlsContext => ({
-  '@@deps': new Map(),
-  '@@once': new Map(),
-  '@@state': new Map(),
-  '@@derived': new Map(),
-})
 
 /**
  * Incapsulate state managment inside particular scope
@@ -649,3 +645,10 @@ const storeOrError = () => {
 
   return store
 }
+
+const diContext = (): AlsContext => ({
+  '@@deps': new Map(),
+  '@@once': new Map(),
+  '@@state': new Map(),
+  '@@derived': new Map(),
+})

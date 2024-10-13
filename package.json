@@ -23,7 +23,7 @@
     "deno"
   ],
   "scripts": {
-    "doc": "typedoc index.ts",
+    "doc": "typedoc --excludeInternal index.ts",
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc",
     "prepublishOnly": "npm run build",

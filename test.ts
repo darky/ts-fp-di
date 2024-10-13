@@ -15,7 +15,6 @@ import {
   di,
   dis,
   diHas,
-  diContext,
   diScope,
   dic,
   diMap,
@@ -371,15 +370,6 @@ test('ensured di works inside process.nextTick', async () => {
         resolve(void 0)
       })
     })
-  })
-})
-
-test('diContext', () => {
-  assert.deepEqual(diContext(), {
-    '@@deps': new Map(),
-    '@@once': new Map(),
-    '@@state': new Map(),
-    '@@derived': new Map(),
   })
 })
 
