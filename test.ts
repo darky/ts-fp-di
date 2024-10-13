@@ -419,6 +419,18 @@ test('diScope with setInterval', async () => {
   assert.strictEqual(scope.inc() > 2, true)
 })
 
+test('diScope with diInit', async () => {
+  const num = dic<number>()
+  const fetchNum = dise(async () => 5, num)
+  const scope = diScope({ num, fetchNum })
+
+  await scope.fetchNum()
+
+  diInit(() => {
+    assert.strictEqual(scope.num(), 5)
+  })
+})
+
 test('dic', () => {
   const n = dic<number>()
   diInit(() => {
