@@ -23,6 +23,7 @@ import {
   div,
   diseSet,
   DiNotInitializedError,
+  DependencyNotRegisteredError,
 } from './index.js'
 import EventEmitter from 'node:events'
 import { setImmediate } from 'node:timers'
@@ -588,5 +589,41 @@ test('div', () => {
     assert.strictEqual(n(), 5)
     assert.strictEqual(n(10), 10)
     assert.strictEqual(n(), 10)
+  })
+})
+
+test('als disable throws diInit not registered', () => {
+  const obj = { test: true }
+  diInit(() => {
+    diSet('obj', obj)
+    als.disable()
+    assert.throws(() => diDep('obj'), DiNotInitializedError)
+  })
+})
+
+test('als disable inside setImmediate also throws diInit not registered', async () => {
+  const obj = { test: true }
+  diInit(async () => {
+    diSet('obj', obj)
+    setImmediate(() => als.disable())
+    await setTimeoutP(10)
+    assert.throws(() => diDep('obj'), DiNotInitializedError)
+  })
+})
+
+test('reinit inside als exit', () => {
+  diInit(() => {
+    diSet('outer', true)
+    assert.strictEqual(diExists(), true)
+    assert.strictEqual(diDep('outer'), true)
+    als.exit(() => {
+      assert.strictEqual(diExists(), false)
+      diInit(() => {
+        diSet('inner', true)
+        assert.strictEqual(diExists(), true)
+        assert.strictEqual(diDep('inner'), true)
+        assert.throws(() => diDep('outer'), DependencyNotRegisteredError)
+      })
+    })
   })
 })
